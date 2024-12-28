@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: eternal-return
+  profiles:
+    active: local

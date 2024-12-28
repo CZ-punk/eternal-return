@@ -1,0 +1,24 @@
+eternal-return:
+  url: https://open-api.bser.io
+  header: x-api-key
+  key: 080NPo2eXN4aleG7BnrqoAHAAMe3ETmaCfC440w8
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/mariadb
+    username: user
+    password: 1234
+    hikari:
+      maximum-pool-size: 100
+      minimum-idle: 10
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    root: debug
