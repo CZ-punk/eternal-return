@@ -26,7 +26,6 @@ public class EternalReturnServiceImpl implements EternalReturnService {
     @Autowired
     private final WebClient webClient;
 
-
     @Override
     public <T> Mono<T> callApi(String endpoint, ReqApiDto request, Class<T> responseType) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(endpoint);

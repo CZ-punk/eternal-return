@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface UserStatsRepository extends JpaRepository<UserStats, Integer> {
 
     boolean existsByUserNumIn(List<Integer> userNums);
-
     Optional<UserStats> findByNickname(String nickname);
+
 }

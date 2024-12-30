@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqApiDto;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqUserNicknameDto;
 import demo.eternalreturn.infrastructure.proxy.service.EternalReturnService;
+import demo.eternalreturn.infrastructure.proxy.service.TableSaveService;
 import demo.eternalreturn.infrastructure.utils.QueryParamUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,8 @@ public class EternalReturnController {
 
     @Autowired
     private EternalReturnService eternalReturnService;
+    @Autowired
+    private TableSaveService tableSaveService;
 
     @GetMapping("/data/{metaType}")
     public Mono<ResponseEntity<?>> callDataMetaType(@PathVariable String metaType) {
@@ -51,6 +54,25 @@ public class EternalReturnController {
         return eternalReturnService.callApi(endpoint, request, JsonNode.class)
                 .map(ResponseEntity::ok);
     }
+
+    @GetMapping("/weapon_type_info")
+    public ResponseEntity<?> callWeaponTypeInfo() {
+        return tableSaveService.callWeaponTypeInfo();
+    }
+
+
+    @GetMapping("/experiment")
+    public ResponseEntity<?> callExperiment() {
+        return tableSaveService.callExperiment();
+    }
+
+    @GetMapping("/experiment_attribute")
+    public ResponseEntity<?> callExperimentAttribute() {
+        return tableSaveService.callExperimentAttribute();
+    }
+
+
+
 
     @GetMapping("/rank/top/{seasonId}/{matchingTeamMode}")
     public Mono<ResponseEntity<?>> callRankTop(@PathVariable Long seasonId,

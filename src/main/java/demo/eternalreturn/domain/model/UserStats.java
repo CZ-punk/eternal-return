@@ -52,4 +52,6 @@ public class UserStats {
         characterStatsList.add(characterStats);
         characterStats.setUserStats(this);
     }
+
+
 }

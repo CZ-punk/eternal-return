@@ -99,6 +99,7 @@ public class CustomServiceImpl implements CustomService {
                     .top7(data.path("top7").asDouble())
                     .build();
 
+            int size = data.path("characterStats").size();
             data.path("characterStats").forEach(character -> {
                 userStatsEntity.connectCharacterStats(
                         CharacterStats.builder()
@@ -112,6 +113,16 @@ public class CustomServiceImpl implements CustomService {
                                 .averageRank(character.path("averageRank").asInt())
                                 .build());
             });
+
+            switch (size) {
+                case 1: for (int i=0; i<2; i++) userStatsEntity.connectCharacterStats(CharacterStats.builder().build());
+                break;
+
+                case 2: userStatsEntity.connectCharacterStats(CharacterStats.builder().build());
+                break;
+
+                default:
+            }
 
             userStatsRepository.save(userStatsEntity);
 
@@ -141,21 +152,26 @@ public class CustomServiceImpl implements CustomService {
         userStats.setTop5(data.path("top5").asDouble());
         userStats.setTop7(data.path("top7").asDouble());
 
-        int size = data.path("characterStats").size();
+        JsonNode characterStatsList = data.path("characterStats");
 
-        for (int i=0; i<size; i++) {
-            JsonNode characterNode = data.path("characterStats").get(i);
+        log.info("characterStatsList: {}", characterStatsList);
+        for (int i=0; i<characterStatsList.size(); i++) {
+
+            JsonNode characterStatsNode = characterStatsList.get(i);
+            log.info("characterStatsNode: {}", characterStatsNode);
+
             CharacterStats characterStats = userStats.getCharacterStatsList().get(i);
+            log.info("");
 
             characterStats.update(
-                    characterNode.path("characterCode").asInt(),
-                    characterNode.path("totalGames").asInt(),
-                    characterNode.path("usages").asInt(),
-                    characterNode.path("maxKillings").asInt(),
-                    characterNode.path("top3").asInt(),
-                    characterNode.path("wins").asInt(),
-                    characterNode.path("top3Rate").asDouble(),
-                    characterNode.path("averageRank").asDouble()
+                    characterStatsNode.path("characterCode").asInt(),
+                    characterStatsNode.path("totalGames").asInt(),
+                    characterStatsNode.path("usages").asInt(),
+                    characterStatsNode.path("maxKillings").asInt(),
+                    characterStatsNode.path("top3").asInt(),
+                    characterStatsNode.path("wins").asInt(),
+                    characterStatsNode.path("top3Rate").asDouble(),
+                    characterStatsNode.path("averageRank").asDouble()
             );
         }
 
@@ -183,4 +199,6 @@ public class CustomServiceImpl implements CustomService {
 
         return request;
     }
+
+
 }
