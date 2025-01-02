@@ -17,9 +17,6 @@ public class BulkServiceImpl implements BulkService {
     @Autowired
     private final JdbcTemplate jdbcTemplate;
 
-
-    // TODO: 연관관계 복잡한 인스턴스는 BULK 연산 불가능
-    // TODO: 내일 벌크연산 가능하도록 메서드를 나누던지 수정
     @Override
     public <T> void bulkInsert(List<T> objectList) {
         if (objectList.isEmpty()) return;
@@ -59,6 +56,7 @@ public class BulkServiceImpl implements BulkService {
         placeholders.setLength(placeholders.length() - 2);
 
         sql.append(") VALUES (").append(placeholders).append(")");
+        log.info("sql: {}", sql);
 
 
         jdbcTemplate.batchUpdate(sql.toString(), objectList, objectList.size(),
@@ -70,6 +68,7 @@ public class BulkServiceImpl implements BulkService {
                             if (!(value instanceof Integer || value instanceof Long || value instanceof Double || value instanceof Float || value instanceof String || value instanceof Enum))
                                 continue;
 
+                            log.info("value[{}]: {}", i, value);
                             switch (value) {
                                 case Enum e -> ps.setString(i + 1, ((Enum<?>) value).name());
                                 case String s -> ps.setString(i + 1, s);

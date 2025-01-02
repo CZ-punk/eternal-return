@@ -3,24 +3,19 @@ package demo.eternalreturn.infrastructure.proxy.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import demo.eternalreturn.domain.model.WeaponTypeInfo;
 import demo.eternalreturn.domain.model.constant.WeaponType;
-import demo.eternalreturn.domain.model.experiment.Experiment;
-import demo.eternalreturn.domain.model.experiment.ExperimentAttribute;
+import demo.eternalreturn.domain.model.experiment.*;
 import demo.eternalreturn.domain.repository.WeaponTypeInfoRepository;
-import demo.eternalreturn.domain.repository.experiment.ExperimentAttributeRepository;
-import demo.eternalreturn.domain.repository.experiment.ExperimentRepository;
+import demo.eternalreturn.domain.repository.experiment.*;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqApiDto;
-import demo.eternalreturn.presentation.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +41,12 @@ public class TableSaveServiceImpl implements TableSaveService {
     private final ExperimentRepository experimentRepository;
     @Autowired
     private final ExperimentAttributeRepository experimentAttributeRepository;
-
+    @Autowired
+    private final ExperimentExpRepository experimentExpRepository;
+    @Autowired
+    private final ExperimentMasteryRepository experimentMasteryRepository;
+    @AutoConfigureOrder
+    private final ExperimentLevelUpStatRepository experimentLevelUpStatRepository;
 
 
     @Override
@@ -79,9 +79,7 @@ public class TableSaveServiceImpl implements TableSaveService {
                             },
                             () -> weaponTypeInfoList.add(getWeaponTypeInfo)
                     );
-
         }
-
         bulkService.bulkInsert(weaponTypeInfoList);
         return ResponseEntity.ok("success");
     }
@@ -145,14 +143,13 @@ public class TableSaveServiceImpl implements TableSaveService {
 
         JsonNode dataNode = eternalReturnService.callApi(endpoint, request, JsonNode.class).block().path("data");
 
-        List<Experiment> allExperiment = experimentRepository.findAll();
         List<ExperimentAttribute> allExperimentAttribute = experimentAttributeRepository.findAll();
         List<ExperimentAttribute> experimentAttributeList = new ArrayList<>();
 
         for (JsonNode data : dataNode) {
-
             ExperimentAttribute getExperimentAttribute = ExperimentAttribute.builder()
                     .code(data.path("characterCode").asInt())
+                    .name(data.path("character").asText())
                     .mastery(WeaponType.valueOf(data.path("mastery").asText()))
                     .controlDifficulty(data.path("controlDifficulty").asInt())
                     .attack(data.path("attack").asInt())
@@ -162,29 +159,145 @@ public class TableSaveServiceImpl implements TableSaveService {
                     .assistance(data.path("assistance").asInt())
                     .build();
 
-            allExperiment.stream().filter(experiment -> experiment.getCode().equals(getExperimentAttribute.getCode()))
+            allExperimentAttribute.stream().filter(
+                            experimentAttribute ->
+                                    experimentAttribute.getCode().equals(getExperimentAttribute.getCode()) &&
+                                            experimentAttribute.getMastery().equals(getExperimentAttribute.getMastery()))
                     .findAny()
                     .ifPresentOrElse(
-                            experiment -> {
-                                experiment.connectExperimentAttribute(getExperimentAttribute);
-                            },
-                            () -> {
-                                throw new CustomException(HttpStatus.CONFLICT, "no experiment to connect");
-                            }
-                    );
-
-            allExperimentAttribute.stream().filter(experimentAttribute -> experimentAttribute.equals(getExperimentAttribute))
-                    .findAny()
-                    .ifPresentOrElse(
-                            experimentAttribute -> {
-                            },
+                            // 있으면, 기존 업데이트
+                            experimentAttribute -> experimentAttribute.update(getExperimentAttribute),
+                            // 없으면, 새로 저장
                             () -> experimentAttributeList.add(getExperimentAttribute)
+
                     );
         }
-
+        // TODO: pk 전략 == identity 인 경우 saveAll 을 사용해도 n 개의 query 보냄
+        // TODO: 반영구적인 ( 자주변하지 않는 ) 데이터이므로 Trade OFF..
         experimentAttributeRepository.saveAll(experimentAttributeList);
         return ResponseEntity.ok("success");
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<?> callExperimentExp() {
+        ReqApiDto request = new ReqApiDto();
+        request.setPathVariable("/" + CHARACTER_EXP);
+        request.setMethod(GET);
+        String endpoint = baseUrl + DATA;
+        endpoint += "/" + CHARACTER_EXP;
 
+        JsonNode dataNode = eternalReturnService.callApi(endpoint, request, JsonNode.class).block().path("data");
+        List<ExperimentExp> allExperimentExp = experimentExpRepository.findAll();
+        List<ExperimentExp> experimentExpList = new ArrayList<>();
+
+        for (JsonNode data : dataNode) {
+            ExperimentExp getExperimentExp = ExperimentExp.builder()
+                    .level(data.path("level").asInt())
+                    .levelUpExp(data.path("levelUpExp").asInt())
+                    .build();
+
+            allExperimentExp.stream().filter(experimentExp -> experimentExp.getLevel().equals(getExperimentExp.getLevel()))
+                    .findAny()
+                    .ifPresentOrElse(
+                            // 있다면, 조건 확인 후 업데이트
+                            experimentExp -> {
+                                if (!experimentExp.getLevelUpExp().equals(getExperimentExp.getLevelUpExp()))
+                                    experimentExp.update(getExperimentExp);
+                            },
+                            // 없다면, 새로 저장
+                            () -> experimentExpList.add(getExperimentExp)
+                    );
+        }
+
+        bulkService.bulkInsert(experimentExpList);
+        return ResponseEntity.ok("success");
+    }
+
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> callExperimentMastery() {
+        ReqApiDto request = new ReqApiDto();
+        request.setPathVariable("/" + CHARACTER_MASTERY);
+        request.setMethod(GET);
+        String endpoint = baseUrl + DATA;
+        endpoint += "/" + CHARACTER_MASTERY;
+
+        JsonNode dataNode = eternalReturnService.callApi(endpoint, request, JsonNode.class).block().path("data");
+        List<ExperimentMastery> allExperimentMastery = experimentMasteryRepository.findAll();
+        List<ExperimentMastery> experimentMasteryList = new ArrayList<>();
+
+        for (JsonNode data : dataNode) {
+            ExperimentMastery getExperimentMastery = ExperimentMastery.builder()
+                    .code(data.path("code").asInt())
+                    .weapon1(data.path("weapon1").asText())
+                    .weapon2(data.path("weapon2").asText())
+                    .weapon3(data.path("weapon3").asText())
+                    .weapon4(data.path("weapon4").asText())
+                    .combat1(data.path("combat1").asText())
+                    .combat2(data.path("combat2").asText())
+                    .survival1(data.path("survival1").asText())
+                    .survival2(data.path("survival2").asText())
+                    .survival3(data.path("survival3").asText())
+                    .build();
+
+            allExperimentMastery.stream().filter(experimentMastery -> experimentMastery.getCode().equals(getExperimentMastery.getCode()))
+                    .findAny()
+                    .ifPresentOrElse(
+                            experimentMastery -> {
+                                if (!experimentMastery.equals(getExperimentMastery))
+                                    experimentMastery.update(getExperimentMastery);
+                            },
+                            () -> experimentMasteryList.add(getExperimentMastery)
+                    );
+        }
+
+        bulkService.bulkInsert(experimentMasteryList);
+        return ResponseEntity.ok("success");
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> callExperimentLevelUpStat() {
+        ReqApiDto request = new ReqApiDto();
+        request.setPathVariable("/" + CHARACTER_LEVEL_UP_STAT);
+        request.setMethod(GET);
+        String endpoint = baseUrl + DATA;
+        endpoint += "/" + CHARACTER_LEVEL_UP_STAT;
+
+        JsonNode dataNode = eternalReturnService.callApi(endpoint, request, JsonNode.class).block().path("data");
+        List<ExperimentLevelUpStat> allExperimentLevelUpStat = experimentLevelUpStatRepository.findAll();
+        List<ExperimentLevelUpStat> experimentLevelUpStatList = new ArrayList<>();
+
+        for (JsonNode data : dataNode) {
+            ExperimentLevelUpStat getExperimentLevelUpStat = ExperimentLevelUpStat.builder()
+                    .code(data.path("code").asInt())
+                    .name(data.path("name").asText())
+                    .maxHp(data.path("maxHp").asInt())
+                    .maxSp(data.path("maxSp").asInt())
+                    .attackPower(data.path("attackPower").asDouble())
+                    .defense(data.path("defense").asDouble())
+                    .criticalChance(data.path("criticalChance").asDouble())
+                    .hpRegen(data.path("hpRegen").asDouble())
+                    .spRegen(data.path("spRegen").asDouble())
+                    .attackSpeed(data.path("attackSpeed").asDouble())
+                    .moveSpeed(data.path("moveSpeed").asDouble())
+                    .build();
+
+            allExperimentLevelUpStat.stream().filter(experimentLevelUpStat -> experimentLevelUpStat.getCode().equals(getExperimentLevelUpStat.getCode()))
+                    .findAny()
+                    .ifPresentOrElse(
+                            experimentLevelUpStat -> {
+                                if (!experimentLevelUpStat.equals(getExperimentLevelUpStat))
+                                    experimentLevelUpStat.update(getExperimentLevelUpStat);
+                            },
+                            () -> experimentLevelUpStatList.add(getExperimentLevelUpStat)
+                    );
+        }
+
+        bulkService.bulkInsert(experimentLevelUpStatList);
+        return ResponseEntity.ok("success");
+    }
 }
+

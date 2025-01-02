@@ -71,8 +71,20 @@ public class EternalReturnController {
         return tableSaveService.callExperimentAttribute();
     }
 
+    @GetMapping("/experiment_exp")
+    public ResponseEntity<?> callExperimentExp() {
+        return tableSaveService.callExperimentExp();
+    }
 
+    @GetMapping("/experiment_mastery")
+    public ResponseEntity<?> callExperimentMastery() {
+        return tableSaveService.callExperimentMastery();
+    }
 
+    @GetMapping("/experiment_level_up_stat")
+    public ResponseEntity<?> callExperimentLevelUpStat() {
+        return tableSaveService.callExperimentLevelUpStat();
+    }
 
     @GetMapping("/rank/top/{seasonId}/{matchingTeamMode}")
     public Mono<ResponseEntity<?>> callRankTop(@PathVariable Long seasonId,

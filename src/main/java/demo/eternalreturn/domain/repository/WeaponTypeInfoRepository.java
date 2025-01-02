@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
 public interface WeaponTypeInfoRepository extends JpaRepository<WeaponTypeInfo, WeaponType> {
 
 }

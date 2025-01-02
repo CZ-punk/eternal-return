@@ -43,38 +43,6 @@ public class Experiment {
     private Double moveSpeed;
     private Double sightRange;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "experiment", fetch = FetchType.LAZY)
-    private List<ExperimentAttribute> experimentAttributeList = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY)
-    private ExperimentLevelUpStat experimentLevelUpStat;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    private ExperimentMastery experimentMastery;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "experiment", fetch = FetchType.LAZY)
-    private List<ExperimentSkin> experimentSkinList = new ArrayList<>();
-
-    public void connectExperimentAttribute(ExperimentAttribute experimentAttribute) {
-        experimentAttributeList.add(experimentAttribute);
-        experimentAttribute.setExperiment(this);
-    }
-    public void connectExperimentLevelUpStat(ExperimentLevelUpStat experimentLevelUpStat) {
-        this.experimentLevelUpStat = experimentLevelUpStat;
-
-    }
-
-    public void connectExperimentMastery(ExperimentMastery experimentMastery) {
-        this.experimentMastery = experimentMastery;
-    }
-
-    public void connectExperimentSkin(ExperimentSkin experimentSkin) {
-        experimentSkinList.add(experimentSkin);
-        experimentSkin.setExperiment(this);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

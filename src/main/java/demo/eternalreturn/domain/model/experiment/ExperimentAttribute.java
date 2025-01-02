@@ -19,8 +19,9 @@ public class ExperimentAttribute {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer code;
+    private String name;
 
+    private Integer code;
     @Enumerated(EnumType.STRING)
     private WeaponType mastery;
 
@@ -31,10 +32,6 @@ public class ExperimentAttribute {
     private Integer move;
     private Integer assistance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "experiment_code")
-    private Experiment experiment;
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -42,21 +39,29 @@ public class ExperimentAttribute {
         ExperimentAttribute that = (ExperimentAttribute) obj;
 
         return Objects.equals(code, that.code) &&
+                Objects.equals(name, that.name) &&
                 Objects.equals(mastery, that.mastery) &&
                 Objects.equals(controlDifficulty, that.controlDifficulty) &&
                 Objects.equals(attack, that.attack) &&
                 Objects.equals(defense, that.defense) &&
                 Objects.equals(disruptor, that.disruptor) &&
                 Objects.equals(move, that.move) &&
-                Objects.equals(assistance, that.assistance) &&
-                Objects.equals(experiment, that.experiment);
+                Objects.equals(assistance, that.assistance);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                code, mastery, controlDifficulty, attack, defense, disruptor, move, assistance, experiment
+                code, name, mastery, controlDifficulty, attack, defense, disruptor, move, assistance
         );
     }
 
+    public void update(ExperimentAttribute getExperimentAttribute) {
+        this.controlDifficulty = getExperimentAttribute.getControlDifficulty();
+        this.attack = getExperimentAttribute.getAttack();
+        this.defense = getExperimentAttribute.getDefense();
+        this.disruptor = getExperimentAttribute.getDisruptor();
+        this.move = getExperimentAttribute.getMove();
+        this.assistance = getExperimentAttribute.getAssistance();
+    }
 }

@@ -18,7 +18,7 @@ public class ExperimentSkin {
 
     private String name;
     private Integer characterCode;  // 캐릭터고유ID = 1
-    private Integer index;
+    private Integer _index;
     private Integer grade;
     private Boolean eventFree;
     private String purchaseType;
@@ -32,8 +32,5 @@ public class ExperimentSkin {
     private String weaponMountCommonPath;
     private String indicatorPath;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "experiment_code")
-    private Experiment experiment;
 
 }

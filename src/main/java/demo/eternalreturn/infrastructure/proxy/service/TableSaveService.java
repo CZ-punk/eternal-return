@@ -7,4 +7,11 @@ public interface TableSaveService {
 
     ResponseEntity<?> callExperiment();
     ResponseEntity<?> callExperimentAttribute();
+
+    ResponseEntity<?> callExperimentExp();
+
+    ResponseEntity<?> callExperimentMastery();
+
+    ResponseEntity<?> callExperimentLevelUpStat();
+
 }
