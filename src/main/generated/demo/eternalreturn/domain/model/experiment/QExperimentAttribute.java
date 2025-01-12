@@ -37,6 +37,8 @@ public class QExperimentAttribute extends EntityPathBase<ExperimentAttribute> {
 
     public final NumberPath<Integer> move = createNumber("move", Integer.class);
 
+    public final StringPath name = createString("name");
+
     public QExperimentAttribute(String variable) {
         super(ExperimentAttribute.class, forVariable(variable));
     }
