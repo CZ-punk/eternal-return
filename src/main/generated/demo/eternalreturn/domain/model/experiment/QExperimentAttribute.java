@@ -31,7 +31,7 @@ public class QExperimentAttribute extends EntityPathBase<ExperimentAttribute> {
 
     public final NumberPath<Integer> disruptor = createNumber("disruptor", Integer.class);
 
-    public final NumberPath<Integer> id = createNumber("id", Integer.class);
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final EnumPath<demo.eternalreturn.domain.model.constant.WeaponType> mastery = createEnum("mastery", demo.eternalreturn.domain.model.constant.WeaponType.class);
 

@@ -47,6 +47,8 @@ public class QExperiment extends EntityPathBase<Experiment> {
 
     public final NumberPath<Double> sightRange = createNumber("sightRange", Double.class);
 
+    public final NumberPath<Integer> skillAmp = createNumber("skillAmp", Integer.class);
+
     public final NumberPath<Double> spRegen = createNumber("spRegen", Double.class);
 
     public final StringPath strLearnStartSkill = createString("strLearnStartSkill");

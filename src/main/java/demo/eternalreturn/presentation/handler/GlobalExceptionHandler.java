@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<?> handleCustomException(CustomException e) {
-        e.printStackTrace();
+        log.error("Error: {}", e.getMessage());
 
         return ResponseEntity.status(e.getCode())
                 .contentType(MediaType.APPLICATION_JSON)

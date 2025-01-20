@@ -1,4 +1,4 @@
-package demo.eternalreturn.infrastructure.proxy.service;
+package demo.eternalreturn.infrastructure.proxy.service.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -19,7 +20,10 @@ public class BulkServiceImpl implements BulkService {
 
     @Override
     public <T> void bulkInsert(List<T> objectList) {
-        if (objectList.isEmpty()) return;
+        if (objectList.isEmpty()) {
+            log.info("Empty object!");
+            return;
+        }
 
         T dto = objectList.getFirst();
         Class<?> aClass = dto.getClass();
@@ -28,18 +32,15 @@ public class BulkServiceImpl implements BulkService {
         String tableName = simpleName.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
 
         Field[] fields = aClass.getDeclaredFields();
-
         StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " (");
         StringBuilder placeholders = new StringBuilder();
-
         for (Field field : fields) {
             field.setAccessible(true);
             try {
                 Object value = field.get(dto);
 
-                if (!(value instanceof Integer || value instanceof Long || value instanceof Double || value instanceof Float || value instanceof String || value instanceof Enum))
+                if (!(value instanceof Integer || value instanceof Long || value instanceof Double || value instanceof Float || value instanceof String || value instanceof Enum || value instanceof Boolean))
                     continue;
-
 
                 String fieldName = field.getName().replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
                 sql.append(fieldName).append(", ");
@@ -48,27 +49,26 @@ public class BulkServiceImpl implements BulkService {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Failed to access field: " + field.getName(), e);
             }
-
         }
-
 
         sql.setLength(sql.length() - 2);
         placeholders.setLength(placeholders.length() - 2);
-
         sql.append(") VALUES (").append(placeholders).append(")");
-        log.info("sql: {}", sql);
-
 
         jdbcTemplate.batchUpdate(sql.toString(), objectList, objectList.size(),
                 (ps, object) -> {
-                    for (int i = 0; i < fields.length; i++) {
-                        fields[i].setAccessible(true);
+
+                    List<Field> list = Arrays.stream(fields)
+                            .filter(field -> !"id".equals(field.getName()))
+                            .toList();
+
+                    for (int i = 0; i < list.size(); i++) {
+                        list.get(i).setAccessible(true);
                         try {
-                            Object value = fields[i].get(object);
-                            if (!(value instanceof Integer || value instanceof Long || value instanceof Double || value instanceof Float || value instanceof String || value instanceof Enum))
+                            Object value = list.get(i).get(object);
+                            if (!(value instanceof Integer || value instanceof Long || value instanceof Double || value instanceof Float || value instanceof String || value instanceof Enum || value instanceof Boolean))
                                 continue;
 
-                            log.info("value[{}]: {}", i, value);
                             switch (value) {
                                 case Enum e -> ps.setString(i + 1, ((Enum<?>) value).name());
                                 case String s -> ps.setString(i + 1, s);

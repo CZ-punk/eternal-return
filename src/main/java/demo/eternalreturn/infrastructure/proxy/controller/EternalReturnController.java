@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqApiDto;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqUserNicknameDto;
 import demo.eternalreturn.infrastructure.proxy.service.EternalReturnService;
-import demo.eternalreturn.infrastructure.proxy.service.TableSaveService;
-import demo.eternalreturn.infrastructure.utils.QueryParamUtils;
+import demo.eternalreturn.infrastructure.proxy.service.experiment.ExperimentTableSaveService;
+import demo.eternalreturn.infrastructure.proxy.service.item.ItemTableSaveService;
+import demo.eternalreturn.infrastructure.proxy.service.util.QueryParamUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,9 @@ public class EternalReturnController {
     @Autowired
     private EternalReturnService eternalReturnService;
     @Autowired
-    private TableSaveService tableSaveService;
+    private ExperimentTableSaveService experimentTableSaveService;
+    @Autowired
+    private ItemTableSaveService itemTableSaveService;
 
     @GetMapping("/data/{metaType}")
     public Mono<ResponseEntity<?>> callDataMetaType(@PathVariable String metaType) {
@@ -44,6 +47,7 @@ public class EternalReturnController {
                 .map(ResponseEntity::ok);
     }
 
+    /// Simple UserNum Checking Method
     @GetMapping("/user/nickname")
     public Mono<ResponseEntity<?>> callUserByNickname(@ModelAttribute ReqUserNicknameDto userNicknameDto) {
         ReqApiDto request = new ReqApiDto();
@@ -57,43 +61,43 @@ public class EternalReturnController {
 
     @GetMapping("/weapon_type_info")
     public ResponseEntity<?> callWeaponTypeInfo() {
-        return tableSaveService.callWeaponTypeInfo();
+        return experimentTableSaveService.callWeaponTypeInfo();
     }
 
 
     @GetMapping("/experiment")
     public ResponseEntity<?> callExperiment() {
-        return tableSaveService.callExperiment();
+        return experimentTableSaveService.callExperiment();
     }
 
     @GetMapping("/experiment_attribute")
     public ResponseEntity<?> callExperimentAttribute() {
-        return tableSaveService.callExperimentAttribute();
+        return experimentTableSaveService.callExperimentAttribute();
     }
 
     @GetMapping("/experiment_exp")
     public ResponseEntity<?> callExperimentExp() {
-        return tableSaveService.callExperimentExp();
+        return experimentTableSaveService.callExperimentExp();
     }
 
     @GetMapping("/experiment_mastery")
     public ResponseEntity<?> callExperimentMastery() {
-        return tableSaveService.callExperimentMastery();
+        return experimentTableSaveService.callExperimentMastery();
     }
 
     @GetMapping("/experiment_level_up_stat")
     public ResponseEntity<?> callExperimentLevelUpStat() {
-        return tableSaveService.callExperimentLevelUpStat();
+        return experimentTableSaveService.callExperimentLevelUpStat();
     }
 
-    @GetMapping("/rank/top/{seasonId}/{matchingTeamMode}")
-    public Mono<ResponseEntity<?>> callRankTop(@PathVariable Long seasonId,
-                                               @PathVariable Long matchingTeamMode) {
+    @GetMapping("/item_material")
+    public ResponseEntity<?> callItemMaterial() {
+        return itemTableSaveService.callItemMaterial();
+    }
 
-        // TODO: SEASON_ID = 17 까지 SOLO GAME 존재
-        // TODO: 현재 이전 프리시즌 및 일부 시즌 데이터 없음
-
-        return null;
+    @GetMapping("/item_consumable")
+    public ResponseEntity<?> callItemConsumable() {
+        return itemTableSaveService.callItemConsumable();
     }
 
 

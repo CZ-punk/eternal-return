@@ -4,6 +4,7 @@ import demo.eternalreturn.domain.model.constant.WeaponType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.slf4j.Logger;
 
 import java.util.Objects;
 
@@ -13,15 +14,15 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table(name = "experiment_attribute")
 public class ExperimentAttribute {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    private String name;
+    private Long id;
 
     private Integer code;
+    private String name;
     @Enumerated(EnumType.STRING)
     private WeaponType mastery;
 
@@ -31,6 +32,16 @@ public class ExperimentAttribute {
     private Integer disruptor;
     private Integer move;
     private Integer assistance;
+
+    public void update(ExperimentAttribute getExperimentAttribute) {
+        this.name = getExperimentAttribute.getName();
+        this.controlDifficulty = getExperimentAttribute.getControlDifficulty();
+        this.attack = getExperimentAttribute.getAttack();
+        this.defense = getExperimentAttribute.getDefense();
+        this.disruptor = getExperimentAttribute.getDisruptor();
+        this.move = getExperimentAttribute.getMove();
+        this.assistance = getExperimentAttribute.getAssistance();
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -54,14 +65,5 @@ public class ExperimentAttribute {
         return Objects.hash(
                 code, name, mastery, controlDifficulty, attack, defense, disruptor, move, assistance
         );
-    }
-
-    public void update(ExperimentAttribute getExperimentAttribute) {
-        this.controlDifficulty = getExperimentAttribute.getControlDifficulty();
-        this.attack = getExperimentAttribute.getAttack();
-        this.defense = getExperimentAttribute.getDefense();
-        this.disruptor = getExperimentAttribute.getDisruptor();
-        this.move = getExperimentAttribute.getMove();
-        this.assistance = getExperimentAttribute.getAssistance();
     }
 }

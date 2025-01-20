@@ -24,6 +24,8 @@ spring:
         order_updates: true
         jdbc:
           batch_size: 500
+  codec:
+    max-in-memory-size: 10MB
 
 logging:
   level:

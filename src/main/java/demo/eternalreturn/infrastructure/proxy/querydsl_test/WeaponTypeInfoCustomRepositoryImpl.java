@@ -21,9 +21,6 @@ public class WeaponTypeInfoCustomRepositoryImpl implements WeaponTypeInfoCustomR
 
     @Autowired
     private final JPAQueryFactory queryFactory;
-    @PersistenceContext
-    private final EntityManager em;
-
 
     @Override
     public WeaponTypeInfo findWeaponTypeInfo(WeaponType type) {

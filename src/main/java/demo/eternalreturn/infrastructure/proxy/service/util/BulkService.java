@@ -1,6 +1,4 @@
-package demo.eternalreturn.infrastructure.proxy.service;
-
-import org.springframework.stereotype.Service;
+package demo.eternalreturn.infrastructure.proxy.service.util;
 
 import java.util.List;
 

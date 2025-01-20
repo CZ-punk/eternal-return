@@ -30,32 +30,6 @@ public class ExperimentLevelUpStat {
     private Double attackSpeed;
     private Double moveSpeed;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        ExperimentLevelUpStat that = (ExperimentLevelUpStat) obj;
-
-        return Objects.equals(code, that.code) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(maxHp, that.maxHp) &&
-                Objects.equals(maxSp, that.maxSp) &&
-                Objects.equals(attackPower, that.attackPower) &&
-                Objects.equals(defense, that.defense) &&
-                Objects.equals(criticalChance, that.criticalChance) &&
-                Objects.equals(hpRegen, that.hpRegen) &&
-                Objects.equals(spRegen, that.spRegen) &&
-                Objects.equals(attackSpeed, that.attackSpeed) &&
-                Objects.equals(moveSpeed, that.moveSpeed);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                code, name, maxHp, maxSp, attackPower, defense, criticalChance, hpRegen, spRegen, attackSpeed, moveSpeed
-        );
-    }
-
     public void update(ExperimentLevelUpStat getExperimentLevelUpStat) {
         this.name = getExperimentLevelUpStat.getName();
         this.maxHp = getExperimentLevelUpStat.getMaxHp();

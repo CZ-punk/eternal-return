@@ -1,12 +1,13 @@
-package demo.eternalreturn.infrastructure.utils;
+package demo.eternalreturn.infrastructure.proxy.service.util;
+
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+@NoArgsConstructor
 public class QueryParamUtils {
-
-    public QueryParamUtils() {};
 
     public static Map<String, String> convertToQueryParams(Object dto) {
 

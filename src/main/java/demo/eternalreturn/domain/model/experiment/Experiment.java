@@ -32,6 +32,7 @@ public class Experiment {
 
     private Integer attackPower;
     private Integer defense;
+    private Integer skillAmp;
 
     private Double hpRegen;
     private Double spRegen;
@@ -59,6 +60,7 @@ public class Experiment {
                 Objects.equals(maxExtraPoint, that.maxExtraPoint) &&
                 Objects.equals(attackPower, that.attackPower) &&
                 Objects.equals(defense, that.defense) &&
+                Objects.equals(skillAmp, that.skillAmp) &&
                 Objects.equals(hpRegen, that.hpRegen) &&
                 Objects.equals(spRegen, that.spRegen) &&
                 Objects.equals(attackSpeed, that.attackSpeed) &&
@@ -72,7 +74,7 @@ public class Experiment {
     public int hashCode() {
         return Objects.hash(
                 code, name, maxHp, maxSp, strLearnStartSkill, strUsePointLearnStartSkill,
-                initExtraPoint, maxExtraPoint, attackPower, defense,
+                initExtraPoint, maxExtraPoint, attackPower, defense, skillAmp,
                 hpRegen, spRegen, attackSpeed, attackSpeedLimit, attackSpeedMin, moveSpeed, sightRange
         );
     }
