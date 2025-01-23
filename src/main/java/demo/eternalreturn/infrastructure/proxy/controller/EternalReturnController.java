@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.Iterator;
+
+import static demo.eternalreturn.infrastructure.proxy.constant.MetaTypeConst.ITEM_ARMOR;
 import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.DATA;
 import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.USER_NICKNAME;
 import static org.springframework.http.HttpMethod.GET;
@@ -98,6 +101,41 @@ public class EternalReturnController {
     @GetMapping("/item_consumable")
     public ResponseEntity<?> callItemConsumable() {
         return itemTableSaveService.callItemConsumable();
+    }
+
+    @GetMapping("/item_armor")
+    public Mono<?> callItemArmor() {
+
+        return itemTableSaveService.callItemArmor();
+//        ReqApiDto request = new ReqApiDto();
+//        request.setPathVariable(ITEM_ARMOR);
+//        request.setMethod(GET);
+//        String endpoint = baseUrl + DATA;
+//        endpoint += "/" + ITEM_ARMOR;
+//
+//
+//        return eternalReturnService.callApi(endpoint, request, JsonNode.class)
+//                .flatMap(jsonNode -> {
+//                    JsonNode dataNode = jsonNode.path("data");
+//                    if (dataNode != null) {
+//                        Iterator<JsonNode> elements = dataNode.elements();
+//
+//                        int i = 0;
+//                        while (elements.hasNext()) {
+//                            JsonNode element = elements.next();
+//                            Iterator<String> fieldNames = element.fieldNames();
+//                            while (fieldNames.hasNext()) {
+//                                String fieldName = fieldNames.next();
+//                                JsonNode value = element.get(fieldName);
+//                                // 키와 값을 출력
+//                                System.out.println(i + "'s ItemArmor Key: " + fieldName + ", Value: " + value);
+//                            }
+//                            i++;
+//                        }
+//
+//                    }
+//                    return Mono.empty(); // 작업 후 반환
+//                });
     }
 
 

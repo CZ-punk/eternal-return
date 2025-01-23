@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +31,17 @@ public class JsonNodeServiceImpl implements JsonNodeService {
     }
 
     @Override
+    public Mono<JsonNode> getMonoJsonNodeByPathVariable(String path, String pathVariable, HttpMethod method, String rootNode) {
+        ReqApiDto request = new ReqApiDto();
+        request.setPathVariable("/" + pathVariable);
+        request.setMethod(method);
+        String endpoint = baseUrl + path;
+        endpoint += "/" + pathVariable;
+
+        return eternalReturnService.callApi(endpoint, request, JsonNode.class);
+    }
+
+    @Override
     public JsonNode getJsonNodeByQueryParams(String path, Object queryParams, HttpMethod method, String rootNode) {
         ReqApiDto request = new ReqApiDto();
         request.setQueryParams(QueryParamUtils.convertToQueryParams(queryParams));
@@ -38,4 +50,5 @@ public class JsonNodeServiceImpl implements JsonNodeService {
 
         return eternalReturnService.callApi(endpoint, request, JsonNode.class).block().path(rootNode);
     }
+
 }

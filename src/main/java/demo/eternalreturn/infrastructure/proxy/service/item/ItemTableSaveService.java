@@ -1,6 +1,7 @@
 package demo.eternalreturn.infrastructure.proxy.service.item;
 
 import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Mono;
 
 public interface ItemTableSaveService {
 
@@ -8,4 +9,8 @@ public interface ItemTableSaveService {
 
     ResponseEntity<?> callItemConsumable();
 
+    Mono<?> callItemArmor();
+
+
+//    ResponseEntity<?> callItemArmor();
 }
