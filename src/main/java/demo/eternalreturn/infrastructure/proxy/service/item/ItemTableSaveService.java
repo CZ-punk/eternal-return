@@ -5,12 +5,17 @@ import reactor.core.publisher.Mono;
 
 public interface ItemTableSaveService {
 
-    ResponseEntity<?> callItemMaterial();
+    Mono<?> callItemMaterial();
 
-    ResponseEntity<?> callItemConsumable();
+    Mono<?> callItemConsumable();
 
     Mono<?> callItemArmor();
 
+    Mono<?> callItemWeapon();
 
-//    ResponseEntity<?> callItemArmor();
+    Mono<?> callItemSpecial();
+
+    Mono<?> callItemSpawn();
+
+    Mono<?> callItemSearchOptionV2();
 }

@@ -1,10 +1,10 @@
 services:
   mariadb:
-    image: mariadb:latest
-    container_name: mariadb_container
+    image: mysql:latest
+    container_name: mysql_container
     restart: always
     environment:
-      MYSQL_DATABASE: mariadb
+      MYSQL_DATABASE: mysqldb
       MYSQL_USER: user
       MYSQL_PASSWORD: 1234
       MYSQL_ROOT_PASSWORD: 1234

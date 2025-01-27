@@ -1,11 +1,17 @@
 package demo.eternalreturn.infrastructure.proxy.service.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.Iterator;
 import java.util.List;
 
 
 public interface BulkService {
 
-    <T> void bulkInsert(List<T> objectList);
 
-    <T> void bulkUpdate(List<T> objectList);
+    <T> void comparingAndBulk(Iterator<JsonNode> elements, List<T> all, List<T> insertList, List<T> updateList, Class<T> clazz);
+
+
+
+
 }

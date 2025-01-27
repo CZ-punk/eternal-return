@@ -1,6 +1,6 @@
 package demo.eternalreturn.presentation.handler;
 
-import demo.eternalreturn.infrastructure.proxy.dto.response.ResponseDto;
+import demo.eternalreturn.presentation.controller.dto.response.ResponseDto;
 import demo.eternalreturn.presentation.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<?> handleCustomException(CustomException e) {
-        log.error("Error: {}", e.getMessage());
+        log.error("CustomException: {}", e.getDescription());
 
         return ResponseEntity.status(e.getCode())
                 .contentType(MediaType.APPLICATION_JSON)

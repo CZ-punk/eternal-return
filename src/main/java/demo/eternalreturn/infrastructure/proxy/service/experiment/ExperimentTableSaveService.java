@@ -1,23 +1,26 @@
 package demo.eternalreturn.infrastructure.proxy.service.experiment;
 
 import demo.eternalreturn.domain.model.UserStats;
-import demo.eternalreturn.infrastructure.proxy.dto.response.ResponseDto;
-import org.springframework.http.ResponseEntity;
+import demo.eternalreturn.presentation.controller.dto.response.ResponseDto;
+import demo.eternalreturn.presentation.controller.dto.request.ReqUserNicknameDto;
+import reactor.core.publisher.Mono;
 
 public interface ExperimentTableSaveService {
 
-    ResponseEntity<?> callWeaponTypeInfo();
+    Mono<?> callWeaponTypeInfo();
 
-    ResponseEntity<?> callExperiment();
+    Mono<?> callExperiment();
 
-    ResponseEntity<?> callExperimentAttribute();
+    Mono<?> callExperimentAttribute();
 
-    ResponseEntity<?> callExperimentExp();
+    Mono<?> callExperimentExp();
 
-    ResponseEntity<?> callExperimentMastery();
+    Mono<?> callExperimentMastery();
 
-    ResponseEntity<?> callExperimentLevelUpStat();
+    Mono<?> callExperimentLevelUpStat();
 
-    ResponseDto<?> saveUserStats(Integer userNum, UserStats userStats);
+    ResponseDto<?> registerUserStats(ReqUserNicknameDto userNicknameDto);
+
+    ResponseDto<?> updateUserStats(UserStats userStats);
 
 }

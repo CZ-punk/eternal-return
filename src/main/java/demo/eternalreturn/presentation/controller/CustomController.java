@@ -1,12 +1,12 @@
 package demo.eternalreturn.presentation.controller;
 
-import demo.eternalreturn.application.CustomService;
-import demo.eternalreturn.infrastructure.proxy.dto.request.ReqUserNicknameDto;
+import demo.eternalreturn.application.service.CustomService;
+import demo.eternalreturn.presentation.controller.dto.response.ResponseDto;
+import demo.eternalreturn.presentation.controller.dto.request.ReqUserNicknameDto;
 import demo.eternalreturn.presentation.controller.dto.request.ReqExperimentCodeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -19,19 +19,14 @@ public class CustomController {
     private final CustomService customService;
 
     @GetMapping("/username")
-    public ResponseEntity<?> searchUserInfoByUsername(@ModelAttribute ReqUserNicknameDto userNicknameDto) {
+    public ResponseDto<?> searchUserInfoByUsername(@ModelAttribute ReqUserNicknameDto userNicknameDto) {
         return customService.searchUserInfoByUsername(userNicknameDto);
     }
 
     @GetMapping("/experiment")
-    public ResponseEntity<?> searchExperimentByExperimentCode(@ModelAttribute ReqExperimentCodeDto experimentCode) {
+    public ResponseDto<?> searchExperimentByExperimentCode(@ModelAttribute ReqExperimentCodeDto experimentCode) {
         return customService.searchExperimentStatByExperimentCode(experimentCode);
     }
     
-    
-    // TODO: Item 관련 컨트롤러 생성 후, Item Type 별 목록 내려주는 Method 구현
-
-
-
-
+    // TODO: 추후 해당 Controller User Custom 부분으로 변경 예정
 }

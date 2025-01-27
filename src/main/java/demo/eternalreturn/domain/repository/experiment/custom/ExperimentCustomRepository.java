@@ -1,6 +1,6 @@
 package demo.eternalreturn.domain.repository.experiment.custom;
 
-import demo.eternalreturn.application.dto.ResExperimentStatDto;
+import demo.eternalreturn.presentation.controller.dto.response.experiment.ResExperimentStatDto;
 
 public interface ExperimentCustomRepository {
 

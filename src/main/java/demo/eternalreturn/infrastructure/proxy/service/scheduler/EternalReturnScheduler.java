@@ -3,7 +3,7 @@
 //import com.fasterxml.jackson.databind.JsonNode;
 //import demo.eternalreturn.domain.model.CharacterStats;
 //import demo.eternalreturn.domain.model.UserStats;
-//import demo.eternalreturn.domain.repository.UserStatsRepository;
+//import demo.eternalreturn.domain.repository.user.UserStatsRepository;
 //import demo.eternalreturn.presentation.exception.CustomException;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;

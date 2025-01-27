@@ -15,14 +15,14 @@ public class CharacterStats {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int characterCode;
-    private int totalGames;
-    private int usages;
-    private int maxKillings;
-    private int top3;
-    private int wins;
-    private double top3Rate;
-    private double averageRank;
+    private Integer characterCode;
+    private Integer totalGames;
+    private Integer usages;
+    private Integer maxKillings;
+    private Integer top3;
+    private Integer wins;
+    private Double top3Rate;
+    private Double averageRank;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_num")

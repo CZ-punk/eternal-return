@@ -18,6 +18,7 @@ public class ItemArmor {
     @Id
     private Integer code;
     private String name;
+    private String itemType;
     private String armorType;
     private String itemGrade;
     private Boolean isCompletedItem;            // 완제템 유무
@@ -102,7 +103,6 @@ public class ItemArmor {
     private Double uniqueSkillAmpRatio;             // 스킬증폭 비율
 
 //    private Integer modeType;
-//    private String itemType;
 //    private String gradeBgOverride;
 //    private Boolean alertInSpectator;
 //    private String craftAnimTrigger;

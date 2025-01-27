@@ -2,7 +2,7 @@ package demo.eternalreturn.infrastructure.proxy.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqApiDto;
-import demo.eternalreturn.infrastructure.proxy.dto.request.ReqUserNicknameDto;
+import demo.eternalreturn.presentation.controller.dto.request.ReqUserNicknameDto;
 import demo.eternalreturn.infrastructure.proxy.service.EternalReturnService;
 import demo.eternalreturn.infrastructure.proxy.service.experiment.ExperimentTableSaveService;
 import demo.eternalreturn.infrastructure.proxy.service.item.ItemTableSaveService;
@@ -15,9 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.Iterator;
-
-import static demo.eternalreturn.infrastructure.proxy.constant.MetaTypeConst.ITEM_ARMOR;
 import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.DATA;
 import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.USER_NICKNAME;
 import static org.springframework.http.HttpMethod.GET;
@@ -52,7 +49,7 @@ public class EternalReturnController {
 
     /// Simple UserNum Checking Method
     @GetMapping("/user/nickname")
-    public Mono<ResponseEntity<?>> callUserByNickname(@ModelAttribute ReqUserNicknameDto userNicknameDto) {
+    public Mono<?> callUserByNickname(@ModelAttribute ReqUserNicknameDto userNicknameDto) {
         ReqApiDto request = new ReqApiDto();
         request.setMethod(GET);
         request.setQueryParams(QueryParamUtils.convertToQueryParams(userNicknameDto));
@@ -63,81 +60,70 @@ public class EternalReturnController {
     }
 
     @GetMapping("/weapon_type_info")
-    public ResponseEntity<?> callWeaponTypeInfo() {
+    public Mono<?> callWeaponTypeInfo() {
         return experimentTableSaveService.callWeaponTypeInfo();
     }
 
-
     @GetMapping("/experiment")
-    public ResponseEntity<?> callExperiment() {
+    public Mono<?> callExperiment() {
         return experimentTableSaveService.callExperiment();
     }
 
     @GetMapping("/experiment_attribute")
-    public ResponseEntity<?> callExperimentAttribute() {
+    public Mono<?> callExperimentAttribute() {
         return experimentTableSaveService.callExperimentAttribute();
     }
 
     @GetMapping("/experiment_exp")
-    public ResponseEntity<?> callExperimentExp() {
+    public Mono<?> callExperimentExp() {
         return experimentTableSaveService.callExperimentExp();
     }
 
     @GetMapping("/experiment_mastery")
-    public ResponseEntity<?> callExperimentMastery() {
+    public Mono<?> callExperimentMastery() {
         return experimentTableSaveService.callExperimentMastery();
     }
 
     @GetMapping("/experiment_level_up_stat")
-    public ResponseEntity<?> callExperimentLevelUpStat() {
+    public Mono<?> callExperimentLevelUpStat() {
         return experimentTableSaveService.callExperimentLevelUpStat();
     }
 
     @GetMapping("/item_material")
-    public ResponseEntity<?> callItemMaterial() {
+    public Mono<?> callItemMaterial() {
         return itemTableSaveService.callItemMaterial();
     }
 
     @GetMapping("/item_consumable")
-    public ResponseEntity<?> callItemConsumable() {
+    public Mono<?> callItemConsumable() {
         return itemTableSaveService.callItemConsumable();
     }
 
     @GetMapping("/item_armor")
     public Mono<?> callItemArmor() {
-
         return itemTableSaveService.callItemArmor();
-//        ReqApiDto request = new ReqApiDto();
-//        request.setPathVariable(ITEM_ARMOR);
-//        request.setMethod(GET);
-//        String endpoint = baseUrl + DATA;
-//        endpoint += "/" + ITEM_ARMOR;
-//
-//
-//        return eternalReturnService.callApi(endpoint, request, JsonNode.class)
-//                .flatMap(jsonNode -> {
-//                    JsonNode dataNode = jsonNode.path("data");
-//                    if (dataNode != null) {
-//                        Iterator<JsonNode> elements = dataNode.elements();
-//
-//                        int i = 0;
-//                        while (elements.hasNext()) {
-//                            JsonNode element = elements.next();
-//                            Iterator<String> fieldNames = element.fieldNames();
-//                            while (fieldNames.hasNext()) {
-//                                String fieldName = fieldNames.next();
-//                                JsonNode value = element.get(fieldName);
-//                                // 키와 값을 출력
-//                                System.out.println(i + "'s ItemArmor Key: " + fieldName + ", Value: " + value);
-//                            }
-//                            i++;
-//                        }
-//
-//                    }
-//                    return Mono.empty(); // 작업 후 반환
-//                });
     }
 
+    @GetMapping("/item_weapon")
+    public Mono<?> callItemWeapon() {
+        return itemTableSaveService.callItemWeapon();
+    }
+
+    @GetMapping("/item_special")
+    public Mono<?> callItemSpecial() {
+        return itemTableSaveService.callItemSpecial();
+    }
+
+    @GetMapping("/item_spawn")
+    public Mono<?> callItemSpawn() {
+        return itemTableSaveService.callItemSpawn();
+    }
+
+    ///  tag 별로 조회 가능한 item list 조회할 때 사용할 Entity
+    @GetMapping("/item_search_option_v2")
+    public Mono<?> callItemSearchOptionV2() {
+        return itemTableSaveService.callItemSearchOptionV2();
+    }
 
 
 }

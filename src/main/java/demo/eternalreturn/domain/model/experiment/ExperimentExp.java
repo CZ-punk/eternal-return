@@ -18,7 +18,4 @@ public class ExperimentExp {
     private Integer level;
     private Integer levelUpExp;
 
-    public void update(ExperimentExp getExperimentExp) {
-        this.levelUpExp = getExperimentExp.getLevelUpExp();
-    }
 }

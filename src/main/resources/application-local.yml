@@ -5,9 +5,9 @@ eternal-return:
 
 spring:
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/mariadb
-    username: user
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mysqldb
+    username: root
     password: 1234
     hikari:
       maximum-pool-size: 100
@@ -17,13 +17,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    generate-ddl: true
     properties:
       hibernate:
         order_inserts: true
         order_updates: true
         jdbc:
           batch_size: 500
+    show-sql: true
   codec:
     max-in-memory-size: 10MB
 
