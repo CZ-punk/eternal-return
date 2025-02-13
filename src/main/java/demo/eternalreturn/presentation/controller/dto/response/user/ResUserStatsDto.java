@@ -1,6 +1,6 @@
 package demo.eternalreturn.presentation.controller.dto.response.user;
 
-import demo.eternalreturn.domain.model.UserStats;
+import demo.eternalreturn.domain.model.user.UserStats;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

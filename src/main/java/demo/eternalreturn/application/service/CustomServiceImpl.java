@@ -1,9 +1,9 @@
 package demo.eternalreturn.application.service;
 
-import demo.eternalreturn.domain.model.UserStats;
+import demo.eternalreturn.domain.model.user.UserStats;
 import demo.eternalreturn.domain.repository.experiment.custom.ExperimentCustomRepository;
 import demo.eternalreturn.domain.repository.item.custom.ItemCustomRepository;
-import demo.eternalreturn.domain.repository.user.UserStatsRepository;
+import demo.eternalreturn.domain.repository.user.jpa.UserStatsRepository;
 import demo.eternalreturn.presentation.controller.dto.response.ResponseDto;
 import demo.eternalreturn.infrastructure.proxy.service.experiment.ExperimentTableSaveService;
 import demo.eternalreturn.presentation.controller.dto.request.ReqExperimentCodeDto;

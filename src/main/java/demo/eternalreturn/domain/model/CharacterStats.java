@@ -1,5 +1,6 @@
 package demo.eternalreturn.domain.model;
 
+import demo.eternalreturn.domain.model.user.UserStats;
 import jakarta.persistence.*;
 import lombok.*;
 

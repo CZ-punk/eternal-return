@@ -11,6 +11,7 @@ public interface BulkService {
 
     <T> void comparingAndBulk(Iterator<JsonNode> elements, List<T> all, List<T> insertList, List<T> updateList, Class<T> clazz);
 
+    <T> T createInstanceByObject(JsonNode dataNode, Class<T> clazz);
 
 
 

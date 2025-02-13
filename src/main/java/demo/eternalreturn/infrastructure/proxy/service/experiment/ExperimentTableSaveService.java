@@ -1,6 +1,6 @@
 package demo.eternalreturn.infrastructure.proxy.service.experiment;
 
-import demo.eternalreturn.domain.model.UserStats;
+import demo.eternalreturn.domain.model.user.UserStats;
 import demo.eternalreturn.presentation.controller.dto.response.ResponseDto;
 import demo.eternalreturn.presentation.controller.dto.request.ReqUserNicknameDto;
 import reactor.core.publisher.Mono;

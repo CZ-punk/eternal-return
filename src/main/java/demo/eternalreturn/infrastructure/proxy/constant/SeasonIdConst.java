@@ -32,7 +32,7 @@ public class SeasonIdConst {
     public static int PRE_SEASON_14 = 26;
     public static int SEASON_14 = 27;
     public static int PRE_SEASON_15 = 28;
-    public static int SEASON_15 = 29;
+    public static int SEASON_15 = 29;   // 정규시즌 6
 
 
 }

@@ -3,20 +3,17 @@ package demo.eternalreturn.infrastructure.proxy.service.item;
 import com.fasterxml.jackson.databind.JsonNode;
 import demo.eternalreturn.domain.model.item.*;
 import demo.eternalreturn.domain.repository.item.jpa.*;
+import demo.eternalreturn.infrastructure.proxy.constant.DataNodeConst;
 import demo.eternalreturn.infrastructure.proxy.service.util.BulkService;
 import demo.eternalreturn.infrastructure.proxy.service.util.JsonNodeService;
-import demo.eternalreturn.presentation.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +27,6 @@ import static org.springframework.http.HttpMethod.GET;
 @RequiredArgsConstructor
 public class ItemTableSaveServiceImpl implements ItemTableSaveService {
 
-    private final String DATA_NODE = "data";
     @Autowired
     private final BulkService bulkService;
     @Autowired
@@ -55,7 +51,7 @@ public class ItemTableSaveServiceImpl implements ItemTableSaveService {
     public Mono<?> callItemMaterial() {
         return jsonNodeService.getMonoJsonNodeByPathVariable(DATA, ITEM_MISC, GET)
                 .flatMap(jsonNode -> {
-                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DATA_NODE);
+                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.DATA);
 
                     List<ItemMaterial> all = itemMaterialRepository.findAll();
                     List<ItemMaterial> insertList = new ArrayList<>();
@@ -72,7 +68,7 @@ public class ItemTableSaveServiceImpl implements ItemTableSaveService {
     public Mono<?> callItemConsumable() {
         return jsonNodeService.getMonoJsonNodeByPathVariable(DATA, ITEM_CONSUMABLE, GET)
                 .flatMap(jsonNode -> {
-                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DATA_NODE);
+                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.DATA);
 
                     List<ItemConsumable> all = itemConsumableRepository.findAll();
                     List<ItemConsumable> insertList = new ArrayList<>();
@@ -89,7 +85,7 @@ public class ItemTableSaveServiceImpl implements ItemTableSaveService {
     public Mono<?> callItemArmor() {
         return jsonNodeService.getMonoJsonNodeByPathVariable(DATA, ITEM_ARMOR, GET)
                 .flatMap(jsonNode -> {
-                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DATA_NODE);
+                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.DATA);
 
                     List<ItemArmor> all = itemArmorRepository.findAll();
                     List<ItemArmor> insertList = new ArrayList<>();
@@ -106,7 +102,7 @@ public class ItemTableSaveServiceImpl implements ItemTableSaveService {
     public Mono<?> callItemWeapon() {
         return jsonNodeService.getMonoJsonNodeByPathVariable(DATA, ITEM_WEAPON, GET)
                 .flatMap(jsonNode -> {
-                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DATA_NODE);
+                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.DATA);
 
                     List<ItemWeapon> all = itemWeaponRepository.findAll();
                     List<ItemWeapon> insertList = new ArrayList<>();
@@ -123,7 +119,7 @@ public class ItemTableSaveServiceImpl implements ItemTableSaveService {
     public Mono<?> callItemSpecial() {
         return jsonNodeService.getMonoJsonNodeByPathVariable(DATA, ITEM_SPECIAL, GET)
                 .flatMap(jsonNode -> {
-                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DATA_NODE);
+                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.DATA);
 
                     List<ItemSpecial> all = itemSpecialRepository.findAll();
                     List<ItemSpecial> insertList = new ArrayList<>();
@@ -140,7 +136,7 @@ public class ItemTableSaveServiceImpl implements ItemTableSaveService {
     public Mono<?> callItemSpawn() {
         return jsonNodeService.getMonoJsonNodeByPathVariable(DATA, ITEM_SPAWN, GET)
                 .flatMap(jsonNode -> {
-                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DATA_NODE);
+                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.DATA);
 
                     List<ItemSpawn> all = itemSpawnRepository.findAll();
                     List<ItemSpawn> insertList = new ArrayList<>();
@@ -157,7 +153,7 @@ public class ItemTableSaveServiceImpl implements ItemTableSaveService {
     public Mono<?> callItemSearchOptionV2() {
         return jsonNodeService.getMonoJsonNodeByPathVariable(DATA, ITEM_SEARCH_OPTION_V2, GET)
                 .flatMap(jsonNode -> {
-                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DATA_NODE);
+                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.DATA);
 
                     List<ItemSearchOptionV2> all = itemSearchOptionV2Repository.findAll();
                     List<ItemSearchOptionV2> insertList = new ArrayList<>();

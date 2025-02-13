@@ -1,7 +1,7 @@
 eternal-return:
   url: https://open-api.bser.io
   header: x-api-key
-  key: 080NPo2eXN4aleG7BnrqoAHAAMe3ETmaCfC440w8
+  key: 0MNrzofHia9gSPPLfk4CpK7J7GaLlhk8r1U6qnR3
 
 spring:
   datasource:

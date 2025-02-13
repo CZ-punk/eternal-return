@@ -1,6 +1,6 @@
-package demo.eternalreturn.domain.repository.user;
+package demo.eternalreturn.domain.repository.user.jpa;
 
-import demo.eternalreturn.domain.model.UserStats;
+import demo.eternalreturn.domain.model.user.UserStats;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

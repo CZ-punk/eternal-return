@@ -2,6 +2,8 @@ package demo.eternalreturn.infrastructure.proxy.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqApiDto;
+import demo.eternalreturn.infrastructure.proxy.service.l10n.L10NService;
+import demo.eternalreturn.infrastructure.proxy.service.user.UserTableSaveService;
 import demo.eternalreturn.presentation.controller.dto.request.ReqUserNicknameDto;
 import demo.eternalreturn.infrastructure.proxy.service.EternalReturnService;
 import demo.eternalreturn.infrastructure.proxy.service.experiment.ExperimentTableSaveService;
@@ -29,11 +31,15 @@ public class EternalReturnController {
     private String baseUrl;
 
     @Autowired
-    private EternalReturnService eternalReturnService;
+    private final EternalReturnService eternalReturnService;
     @Autowired
-    private ExperimentTableSaveService experimentTableSaveService;
+    private final ExperimentTableSaveService experimentTableSaveService;
     @Autowired
-    private ItemTableSaveService itemTableSaveService;
+    private final ItemTableSaveService itemTableSaveService;
+    @Autowired
+    private final UserTableSaveService userTableSaveService;
+    @Autowired
+    private final L10NService l10NService;
 
     @GetMapping("/data/{metaType}")
     public Mono<ResponseEntity<?>> callDataMetaType(@PathVariable String metaType) {
@@ -123,6 +129,24 @@ public class EternalReturnController {
     @GetMapping("/item_search_option_v2")
     public Mono<?> callItemSearchOptionV2() {
         return itemTableSaveService.callItemSearchOptionV2();
+    }
+
+    ///  top rank ( by season )
+    @GetMapping("/rank/{season}")
+    public Mono<?> callTopRankBySeason(@PathVariable String season) {
+        return userTableSaveService.callRank1000BySeason(season);
+    }
+
+    ///  userRank ( by season )
+    @GetMapping("/rank/{userNum}/{season}")
+    public Mono<?> callUserRankByUserNumAndSeason(@PathVariable String userNum, @PathVariable String season) {
+        return userTableSaveService.callUserRankByUserNumAndSeason(userNum, season);
+    }
+
+    ///  L10N ( 언어를 바탕으로 게임 정보 가져오기 )
+    @GetMapping("/l10n/{language}")
+    public Mono<?> callL10n(@PathVariable String language) {
+        return l10NService.callL10n(language);
     }
 
 

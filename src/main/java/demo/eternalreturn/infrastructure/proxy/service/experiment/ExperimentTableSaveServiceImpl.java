@@ -2,11 +2,11 @@ package demo.eternalreturn.infrastructure.proxy.service.experiment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import demo.eternalreturn.domain.model.UserStats;
+import demo.eternalreturn.domain.model.user.UserStats;
 import demo.eternalreturn.domain.model.WeaponTypeInfo;
 import demo.eternalreturn.domain.model.experiment.*;
-import demo.eternalreturn.domain.repository.user.CharacterStatsRepository;
-import demo.eternalreturn.domain.repository.user.UserStatsRepository;
+import demo.eternalreturn.domain.repository.user.jpa.CharacterStatsRepository;
+import demo.eternalreturn.domain.repository.user.jpa.UserStatsRepository;
 import demo.eternalreturn.domain.repository.item.jpa.WeaponTypeInfoRepository;
 import demo.eternalreturn.domain.repository.experiment.jpa.*;
 import demo.eternalreturn.infrastructure.proxy.dto.response.ResUserNicknameDto;

@@ -1,6 +1,7 @@
-package demo.eternalreturn.domain.model;
+package demo.eternalreturn.domain.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import demo.eternalreturn.domain.model.CharacterStats;
 import jakarta.persistence.*;
 import lombok.*;
 

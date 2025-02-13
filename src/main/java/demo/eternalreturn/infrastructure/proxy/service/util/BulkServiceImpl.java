@@ -6,6 +6,7 @@ import demo.eternalreturn.presentation.exception.CustomException;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,44 +38,11 @@ public class BulkServiceImpl implements BulkService {
     // 성능: BulkUpdate > DirtyChecking
     // 단, Json data === Class FieldName
     @Override
+    @Transactional
     public <T> void comparingAndBulk(Iterator<JsonNode> elements, List<T> all, List<T> insertList, List<T> updateList, Class<T> clazz) {
         while (elements.hasNext()) {
-            JsonNode element = elements.next();
-            Iterator<String> fieldNames = element.fieldNames();
 
-            T item = createInstance(clazz);
-            while (fieldNames.hasNext()) {
-                String fieldName = fieldNames.next();
-                JsonNode value = element.path(fieldName);
-
-                try {
-                    Field field = clazz.getDeclaredField(fieldName);
-                    field.setAccessible(true);
-
-                    if (field.getType() == Integer.class) field.set(item, value.asInt());
-                    else if (field.getType() == Double.class) field.set(item, value.asDouble());
-                    else if (field.getType() == Boolean.class) field.set(item, value.asBoolean());
-                    else if (field.getType() == String.class) field.set(item, value.asText());
-                    else if (field.getType().isEnum())
-                        field.set(item, Enum.valueOf((Class<? extends Enum>) field.getType(), value.asText()));
-
-//                    else if (List.class.isAssignableFrom(field.getType())) {
-//                        ParameterizedType genericType = (ParameterizedType) field.getGenericType();
-//                        Class<?> listType = (Class<?>) genericType.getActualTypeArguments()[0];
-//                        for (JsonNode node : value) {
-//                            Object o = objectMapper.readValue(node.toString(), listType);
-//                            item.getClass().getMethod("add" + listType.getSimpleName(), listType).invoke(item, o);
-//                        }
-//                    }
-
-                } catch (NoSuchFieldException e) {
-                    log.debug("해당 필드가 존재하지 않습니다: {}", e.getMessage());
-                } catch (IllegalAccessException e) {
-                    log.error("해당 필드에 접근할 수 없습니다: {}", e.getMessage());
-                } catch (Exception e) {
-                    throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-                }
-            }
+            T item = createInstanceByObject(elements.next(), clazz);
 
             boolean exists = all.stream().anyMatch(existingItem -> {
                 try {
@@ -93,6 +61,40 @@ public class BulkServiceImpl implements BulkService {
 
         bulkInsert(insertList);
         bulkUpdate(updateList);
+    }
+
+    @Override
+    @Transactional
+    public <T> T createInstanceByObject(JsonNode dataNode, Class<T> clazz) {
+        T item = createInstance(clazz);
+        Iterator<String> fieldNames = dataNode.fieldNames();
+
+        while (fieldNames.hasNext()) {
+            String fieldName = fieldNames.next();
+            JsonNode value = dataNode.path(fieldName);
+
+            try {
+                Field field = clazz.getDeclaredField(fieldName);
+                field.setAccessible(true);
+
+                if (field.getType() == Integer.class) field.set(item, value.asInt());
+                else if (field.getType() == Double.class) field.set(item, value.asDouble());
+                else if (field.getType() == Boolean.class) field.set(item, value.asBoolean());
+                else if (field.getType() == String.class) field.set(item, value.asText());
+                else if (field.getType().isEnum())
+                    field.set(item, Enum.valueOf((Class<? extends Enum>) field.getType(), value.asText()));
+
+            } catch (NoSuchFieldException e) {
+                log.debug("해당 필드가 존재하지 않습니다: {}", e.getMessage());
+            } catch (IllegalAccessException e) {
+                log.error("해당 필드에 접근할 수 없습니다: {}", e.getMessage());
+            } catch (Exception e) {
+                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
+
+        }
+
+        return item;
     }
 
     private <T> boolean existenceByStrategy(T item, T existingItem, boolean useGeneratedValue, Class<T> clazz) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
@@ -159,9 +161,7 @@ public class BulkServiceImpl implements BulkService {
 
             if (field.isAnnotationPresent(GeneratedValue.class)) continue;
 
-            String columnName = field.isAnnotationPresent(Column.class) ?
-                    field.getAnnotation(Column.class).name() :
-                    field.getName().replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
+            String columnName = getColumnName(field);
 
             sql.append(columnName).append(", ");
             placeholders.append("?, ");
@@ -178,10 +178,12 @@ public class BulkServiceImpl implements BulkService {
                             .filter(field -> !field.isAnnotationPresent(GeneratedValue.class))
                             .toList();
 
+
                     for (int i = 0; i < list.size(); i++) {
                         list.get(i).setAccessible(true);
                         try {
                             Object value = list.get(i).get(object);
+
                             if (!isSupportedType(value.getClass()))
                                 throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "bulk insert: not supported type, value: " + value + ", class: " + value.getClass());
 
@@ -218,14 +220,11 @@ public class BulkServiceImpl implements BulkService {
         for (Field field : fields) {
             field.setAccessible(true);
             if (field.isAnnotationPresent(Id.class)) {
-                placeholder.append(" where ").append(field.getName()).append(" = ?");
+                placeholder.append(" where ");
+                placeholder.append(getColumnName(field)).append(" = ?");
                 continue;
             }
-
-            String columnName = field.isAnnotationPresent(Column.class) ?
-                    field.getAnnotation(Column.class).name() :
-                    field.getName().replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
-            sql.append(columnName).append(" = ?, ");
+            sql.append(getColumnName(field)).append(" = ?, ");
         }
         sql.setLength(sql.length() - 2);
         sql.append(placeholder);
@@ -262,5 +261,12 @@ public class BulkServiceImpl implements BulkService {
                 }
             }
         });
+    }
+
+    private static String getColumnName(Field field) {
+        String columnName = field.isAnnotationPresent(Column.class) ?
+                field.getAnnotation(Column.class).name() :
+                field.getName().replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
+        return columnName;
     }
 }
