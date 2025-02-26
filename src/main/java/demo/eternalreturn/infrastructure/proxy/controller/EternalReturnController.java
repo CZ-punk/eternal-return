@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqApiDto;
 import demo.eternalreturn.infrastructure.proxy.service.l10n.L10NService;
 import demo.eternalreturn.infrastructure.proxy.service.user.UserTableSaveService;
-import demo.eternalreturn.presentation.controller.dto.request.ReqUserNicknameDto;
+import demo.eternalreturn.presentation.dto.request.eternal_return.ReqUserNicknameDto;
 import demo.eternalreturn.infrastructure.proxy.service.EternalReturnService;
 import demo.eternalreturn.infrastructure.proxy.service.experiment.ExperimentTableSaveService;
 import demo.eternalreturn.infrastructure.proxy.service.item.ItemTableSaveService;

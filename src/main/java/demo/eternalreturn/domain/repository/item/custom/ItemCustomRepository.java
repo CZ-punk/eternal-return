@@ -1,11 +1,11 @@
 package demo.eternalreturn.domain.repository.item.custom;
 
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemArmorCond;
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemConsumableCond;
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemWeaponCond;
-import demo.eternalreturn.presentation.controller.dto.response.item.ResItemArmorDto;
-import demo.eternalreturn.presentation.controller.dto.response.item.ResItemConsumableDto;
-import demo.eternalreturn.presentation.controller.dto.response.item.ResItemWeaponDto;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemArmorCond;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemConsumableCond;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemWeaponCond;
+import demo.eternalreturn.presentation.dto.response.eternal_return.item.ResItemArmorDto;
+import demo.eternalreturn.presentation.dto.response.eternal_return.item.ResItemConsumableDto;
+import demo.eternalreturn.presentation.dto.response.eternal_return.item.ResItemWeaponDto;
 
 import java.util.List;
 

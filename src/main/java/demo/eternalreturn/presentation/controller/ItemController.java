@@ -1,10 +1,10 @@
 package demo.eternalreturn.presentation.controller;
 
 import demo.eternalreturn.application.service.ItemService;
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemArmorCond;
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemConsumableCond;
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemWeaponCond;
-import demo.eternalreturn.presentation.controller.dto.response.ResponseDto;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemArmorCond;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemConsumableCond;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemWeaponCond;
+import demo.eternalreturn.presentation.dto.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

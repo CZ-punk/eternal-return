@@ -1,7 +1,7 @@
 //package demo.eternalreturn.infrastructure.proxy.service;
 //
 //import com.fasterxml.jackson.databind.JsonNode;
-//import demo.eternalreturn.domain.model.CharacterStats;
+//import demo.eternalreturn.domain.model.eternal_return.user.CharacterStats;
 //import demo.eternalreturn.domain.model.user.UserStats;
 //import demo.eternalreturn.domain.repository.user.jpa.UserStatsRepository;
 //import demo.eternalreturn.presentation.exception.CustomException;

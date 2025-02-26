@@ -1,15 +1,15 @@
 package demo.eternalreturn.domain.repository.experiment.custom;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import demo.eternalreturn.presentation.controller.dto.response.experiment.QResExperimentStatDto;
-import demo.eternalreturn.presentation.controller.dto.response.experiment.QResExperimentStatDto_LevelUpStat;
-import demo.eternalreturn.presentation.controller.dto.response.experiment.ResExperimentStatDto;
+import demo.eternalreturn.presentation.dto.response.eternal_return.experiment.QResExperimentStatDto;
+import demo.eternalreturn.presentation.dto.response.eternal_return.experiment.QResExperimentStatDto_LevelUpStat;
+import demo.eternalreturn.presentation.dto.response.eternal_return.experiment.ResExperimentStatDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import static demo.eternalreturn.domain.model.experiment.QExperiment.experiment;
-import static demo.eternalreturn.domain.model.experiment.QExperimentLevelUpStat.experimentLevelUpStat;
+import static demo.eternalreturn.domain.model.eternal_return.experiment.QExperiment.experiment;
+import static demo.eternalreturn.domain.model.eternal_return.experiment.QExperimentLevelUpStat.experimentLevelUpStat;
 
 @Repository
 @RequiredArgsConstructor

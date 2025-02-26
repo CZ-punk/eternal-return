@@ -5,21 +5,22 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import demo.eternalreturn.infrastructure.converter.TupleConverter;
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemArmorCond;
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemConsumableCond;
-import demo.eternalreturn.presentation.controller.dto.request.cond.ItemWeaponCond;
-import demo.eternalreturn.presentation.controller.dto.response.item.ResItemArmorDto;
-import demo.eternalreturn.presentation.controller.dto.response.item.ResItemConsumableDto;
-import demo.eternalreturn.presentation.controller.dto.response.item.ResItemWeaponDto;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemArmorCond;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemConsumableCond;
+import demo.eternalreturn.presentation.dto.request.eternal_return.cond.ItemWeaponCond;
+import demo.eternalreturn.presentation.dto.response.eternal_return.item.ResItemArmorDto;
+import demo.eternalreturn.presentation.dto.response.eternal_return.item.ResItemConsumableDto;
+import demo.eternalreturn.presentation.dto.response.eternal_return.item.ResItemWeaponDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static demo.eternalreturn.domain.model.item.QItemArmor.itemArmor;
-import static demo.eternalreturn.domain.model.item.QItemConsumable.itemConsumable;
-import static demo.eternalreturn.domain.model.item.QItemWeapon.itemWeapon;
+import static demo.eternalreturn.domain.model.eternal_return.item.QItemArmor.itemArmor;
+import static demo.eternalreturn.domain.model.eternal_return.item.QItemConsumable.itemConsumable;
+import static demo.eternalreturn.domain.model.eternal_return.item.QItemWeapon.itemWeapon;
+
 
 @Repository
 @RequiredArgsConstructor

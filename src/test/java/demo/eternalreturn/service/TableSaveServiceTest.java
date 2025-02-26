@@ -1,6 +1,6 @@
 //package demo.eternalreturn.service;
 //
-//import demo.eternalreturn.domain.model.WeaponTypeInfo;
+//import demo.eternalreturn.domain.model.eternal_return.item.WeaponTypeInfo;
 //import demo.eternalreturn.domain.model.constant.WeaponType;
 //import demo.eternalreturn.domain.model.experiment.Experiment;
 //import demo.eternalreturn.domain.repository.item.jpa.WeaponTypeInfoRepository;

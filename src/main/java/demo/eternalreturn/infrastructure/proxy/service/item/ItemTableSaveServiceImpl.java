@@ -1,7 +1,7 @@
 package demo.eternalreturn.infrastructure.proxy.service.item;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import demo.eternalreturn.domain.model.item.*;
+import demo.eternalreturn.domain.model.eternal_return.item.*;
 import demo.eternalreturn.domain.repository.item.jpa.*;
 import demo.eternalreturn.infrastructure.proxy.constant.DataNodeConst;
 import demo.eternalreturn.infrastructure.proxy.service.util.BulkService;

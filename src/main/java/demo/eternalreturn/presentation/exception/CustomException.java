@@ -1,5 +1,6 @@
 package demo.eternalreturn.presentation.exception;
 
+import demo.eternalreturn.presentation.dto.response.ResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -10,25 +11,17 @@ import org.springframework.http.HttpStatusCode;
 public class CustomException extends RuntimeException {
 
     private HttpStatusCode code;
-
     private ResultMessage result;
+    private String message;
 
-    private String description;
-
-    public CustomException() {
-        code = HttpStatus.BAD_REQUEST;
-        result = ResultMessage.Error;
-    }
-
-    public CustomException(HttpStatusCode statusCode, String description) {
+    public CustomException(HttpStatusCode statusCode, String message) {
         code = statusCode;
         result = ResultMessage.Error;
-        this.description = description;
+        this.message = message;
     }
 
-    public CustomException(HttpStatus statusCode) {
-        code = statusCode;
-        result = ResultMessage.Error;
+    public ResponseDto<?> toResponseDto() {
+        return new ResponseDto<>(code, result, message);
     }
 
 }

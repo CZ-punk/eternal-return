@@ -1,31 +1,27 @@
 package demo.eternalreturn.infrastructure.proxy.service.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import demo.eternalreturn.domain.model.user.TopRank;
-import demo.eternalreturn.domain.model.user.UserRank;
-import demo.eternalreturn.domain.repository.user.jpa.TopRankRepository;
-import demo.eternalreturn.domain.repository.user.jpa.UserRankRepository;
+import demo.eternalreturn.domain.model.eternal_return.user.TopRank;
+import demo.eternalreturn.domain.model.eternal_return.user.UserRank;
+import demo.eternalreturn.domain.repository.player.jpa.TopRankRepository;
+import demo.eternalreturn.domain.repository.player.jpa.UserRankRepository;
 import demo.eternalreturn.infrastructure.proxy.constant.DataNodeConst;
 import demo.eternalreturn.infrastructure.proxy.service.util.BulkService;
 import demo.eternalreturn.infrastructure.proxy.service.util.JsonNodeService;
-import demo.eternalreturn.presentation.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.RANK_TOP;
 import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.USER_RANK;
-import static demo.eternalreturn.infrastructure.proxy.service.util.InstanceUtils.createInstance;
 import static org.springframework.http.HttpMethod.GET;
 
 @Slf4j
