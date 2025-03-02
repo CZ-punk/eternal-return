@@ -24,8 +24,8 @@ public class JwtTokenProvider {
     @Value("${jwt.secret-key}")
     private String key;
 
-    private final Long ACCESS_TOKEN_VALID_TIME = 5 * 60L;
-    private final Long REFRESH_TOKEN_VALID_TIME = 12 * 60L;
+    private final Long ACCESS_TOKEN_VALID_TIME = 5 * 60 * 1000L;    // ms
+    private final Long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 1000L;  // ms
     private SecretKey secretKey;
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
@@ -36,11 +36,14 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(Long userId, Set<Role> roles) {
-        String[] roleArray = roles.stream().map(Role::getAuthority).toArray(String[]::new);
+        StringBuilder role = new StringBuilder();
+
+        roles.stream().map(Role::getAuthority).forEach(auth -> role.append(auth).append(","));
+        role.deleteCharAt(role.length() - 1);
 
         return Jwts.builder()
                 .subject(String.valueOf(userId))
-                .claim("role", roleArray)
+                .claim("role", role.toString())
                 .issuer(issuer)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALID_TIME))
@@ -49,11 +52,14 @@ public class JwtTokenProvider {
     }
 
     public String createRefreshToken(Long userId, Set<Role> roles) {
-        String[] roleArray = roles.stream().map(Role::getAuthority).toArray(String[]::new);
+        StringBuilder role = new StringBuilder();
+
+        roles.stream().map(Role::getAuthority).forEach(auth -> role.append(auth).append(","));
+        role.deleteCharAt(role.length() - 1);
 
         return Jwts.builder()
                 .subject(String.valueOf(userId))
-                .claim("role", roleArray)
+                .claim("role", role.toString())
                 .issuer(issuer)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALID_TIME))

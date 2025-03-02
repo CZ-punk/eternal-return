@@ -1,6 +1,7 @@
-package demo.eternalreturn.domain.model;
+package demo.eternalreturn.domain.model.Member;
 
-import demo.eternalreturn.domain.constant.Role;
+import demo.eternalreturn.domain.model.BaseEntity;
+import demo.eternalreturn.domain.model.Board.Board;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "member")
-public class Member {
+public class Member extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,18 +28,25 @@ public class Member {
 
     private String refreshToken;
 
-    @ElementCollection(targetClass = Role.class)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "username"))
-    @Enumerated(EnumType.STRING)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    private Set<MemberRole> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Post> postList = new ArrayList<>();
+    private List<Board> boardList = new ArrayList<>();
 
 
     public void signOut() {
         this.refreshToken = null;
+    }
+
+    public void connectionRole(MemberRole role) {
+        this.roles.add(role);
+        role.setMember(this);
+    }
+
+    public void updateUsername(String username) {
+        this.username = username;
     }
 }

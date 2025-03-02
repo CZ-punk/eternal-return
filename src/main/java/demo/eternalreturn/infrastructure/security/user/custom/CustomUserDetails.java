@@ -10,13 +10,11 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
 public abstract class CustomUserDetails implements UserDetails {
 
-    @Getter
     protected Long memberId;
-    @Getter
     protected String loginId;
-    @Getter
     protected Set<Role> roles;
     protected String refreshToken;
 

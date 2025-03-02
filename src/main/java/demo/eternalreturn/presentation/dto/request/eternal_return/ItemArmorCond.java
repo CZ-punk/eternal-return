@@ -1,4 +1,4 @@
-package demo.eternalreturn.presentation.dto.request.eternal_return.cond;
+package demo.eternalreturn.presentation.dto.request.eternal_return;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

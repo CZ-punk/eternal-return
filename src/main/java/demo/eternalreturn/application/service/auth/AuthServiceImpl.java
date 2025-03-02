@@ -1,8 +1,9 @@
 package demo.eternalreturn.application.service.auth;
 
 import demo.eternalreturn.domain.constant.Role;
-import demo.eternalreturn.domain.model.Member;
-import demo.eternalreturn.domain.repository.MemberRepository;
+import demo.eternalreturn.domain.model.Member.Member;
+import demo.eternalreturn.domain.model.Member.MemberRole;
+import demo.eternalreturn.domain.repository.member.MemberRepository;
 import demo.eternalreturn.infrastructure.security.jwt.JwtTokenProvider;
 import demo.eternalreturn.infrastructure.security.user.MemberUserDetails;
 import demo.eternalreturn.infrastructure.security.user.MemberUserDetailsService;
@@ -26,6 +27,8 @@ import org.springframework.util.StringUtils;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static demo.eternalreturn.infrastructure.security.jwt.JwtTokenProvider.BEARER_PREFIX;
 
@@ -50,12 +53,13 @@ public class AuthServiceImpl implements AuthService {
         if (duplicatedUser != null)
             throw new CustomException(HttpStatus.CONFLICT, "duplicated loginId or username");
 
+        MemberRole memberRole = MemberRole.builder().role(Role.USER).build();
         Member createdUser = Member.builder()
                 .loginId(reqSignUpDto.getLoginId())
                 .loginPw(passwordEncoder.encode(reqSignUpDto.getLoginPw()))
                 .username(reqSignUpDto.getUsername())
-                .roles(new HashSet<>(Collections.singleton(Role.USER)))
                 .build();
+        createdUser.connectionRole(memberRole);
 
         memberRepository.save(createdUser);
 
@@ -68,17 +72,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public ResSignInDto signIn(ReqSignInDto reqSignInDto) {
-        Member user = memberRepository.findByLoginId(reqSignInDto.getLoginId())
+        Member member = memberRepository.findByLoginIdAndIsDeleteFalseWithRoles(reqSignInDto.getLoginId())
                 .orElseThrow(() -> new CustomException(HttpStatus.UNAUTHORIZED, "not found member"));
 
-        if (!passwordEncoder.matches(reqSignInDto.getLoginPw(), user.getLoginPw()))
+        if (!passwordEncoder.matches(reqSignInDto.getLoginPw(), member.getLoginPw()))
             throw new CustomException(HttpStatus.UNAUTHORIZED, "no matches password");
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getRoles());
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), user.getRoles());
+        Set<Role> roles = member.getRoles().stream().map(MemberRole::getRole).collect(Collectors.toSet());
+        String accessToken = jwtTokenProvider.createAccessToken(member.getId(), roles);
+        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId(), roles);
 
-        user.setRefreshToken(refreshToken);
-        memberRepository.save(user);
+        member.setRefreshToken(refreshToken);
+        memberRepository.save(member);
 
         return ResSignInDto.builder()
                 .accessToken(accessToken)
@@ -119,6 +124,8 @@ public class AuthServiceImpl implements AuthService {
             Member member = memberRepository.findById(user.getMemberId())
                     .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "no exist member"));
 
+            if (member.isDelete()) throw new CustomException(HttpStatus.FORBIDDEN, "with draw member");
+
             // context 저장된 refresh token 과 비교
             if (!memberUserDetailsService.checkCurrentTokenEquals(refreshToken, MemberUserDetails.of(member)))
                 throw new CustomException(HttpStatus.UNAUTHORIZED, "invalid refresh token");
@@ -129,11 +136,12 @@ public class AuthServiceImpl implements AuthService {
             member.setRefreshToken(refreshToken);
             memberRepository.save(member);
 
+            Set<Role> roles = member.getRoles().stream().map(MemberRole::getRole).collect(Collectors.toSet());
             return ResRefreshDto.builder()
                     .id(member.getId())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
-                    .roles(member.getRoles())
+                    .roles(roles)
                     .build();
 
         }).orElseThrow(() -> new CustomException(HttpStatus.FORBIDDEN, "no authority"));

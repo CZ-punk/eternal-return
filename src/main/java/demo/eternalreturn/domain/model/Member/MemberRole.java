@@ -1,5 +1,6 @@
-package demo.eternalreturn.domain.model;
+package demo.eternalreturn.domain.model.Member;
 
+import demo.eternalreturn.domain.constant.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,21 +10,17 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Entity
-@ToString
-@Table(name = "post")
-public class Post {
+@Table(name = "member_role")
+public class MemberRole {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-    private String quote;
-    private String contents;
-
-    private String titleImageUrl;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private Member member;
 
 }

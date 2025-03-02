@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
-@EnableJpaAuditing
 @EnableJpaRepositories(basePackages = {"demo.eternalreturn"})
 @EnableCaching
 @EnableAsync

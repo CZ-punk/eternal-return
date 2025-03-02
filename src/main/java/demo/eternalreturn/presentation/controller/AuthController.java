@@ -4,6 +4,7 @@ import demo.eternalreturn.application.service.auth.AuthService;
 import demo.eternalreturn.presentation.dto.request.auth.ReqSignInDto;
 import demo.eternalreturn.presentation.dto.request.auth.ReqSignUpDto;
 import demo.eternalreturn.presentation.dto.response.ResponseDto;
+import demo.eternalreturn.presentation.dto.response.auth.ResRefreshDto;
 import demo.eternalreturn.presentation.dto.response.auth.ResSignInDto;
 import demo.eternalreturn.presentation.dto.response.auth.ResSignUpDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,11 +16,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static demo.eternalreturn.presentation.exception.ResultMessage.Success;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -28,26 +30,27 @@ public class AuthController {
     public ResponseEntity<?> signUp(@RequestBody ReqSignUpDto reqSignUpDto) {
 
         ResSignUpDto resSignUpDto = authService.signUp(reqSignUpDto);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, Success, resSignUpDto));
+        return ResponseEntity.ok(new ResponseDto<>(OK, Success, resSignUpDto));
     }
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody ReqSignInDto reqSignInDto) {
         ResSignInDto resSignInDto = authService.signIn(reqSignInDto);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, Success, resSignInDto));
+        return ResponseEntity.ok(new ResponseDto<>(OK, Success, resSignInDto));
     }
 
     @GetMapping("/sign-out")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<?> signOut() {
+        log.info("signOut");
         authService.signOut();
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, Success, null));
+        return ResponseEntity.ok(new ResponseDto<>(OK, Success, null));
     }
 
     @GetMapping("/token/refresh")
     public ResponseEntity<?> recreateAccessToken(HttpServletRequest request) {
-        authService.recreateAccessToken(request);
-        return null;
+        ResRefreshDto resRefreshDto = authService.recreateAccessToken(request);
+        return ResponseEntity.ok(new ResponseDto<>(OK, Success, resRefreshDto));
     }
 
 

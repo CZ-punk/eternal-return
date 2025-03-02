@@ -1,8 +1,11 @@
 package demo.eternalreturn.infrastructure.security.user;
 
-import demo.eternalreturn.domain.model.Member;
+import demo.eternalreturn.domain.model.Member.Member;
+import demo.eternalreturn.domain.model.Member.MemberRole;
 import demo.eternalreturn.infrastructure.security.user.custom.CustomUserDetails;
 import lombok.*;
+
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -16,7 +19,7 @@ public class MemberUserDetails extends CustomUserDetails {
     private String loginPw;
     private String username;
     private String refreshToken;
-    //    private Boolean isQuited;
+    private Boolean isDelete;
 
     public static MemberUserDetails of(Member member) {
         MemberUserDetails memberUserDetails = MemberUserDetails.builder()
@@ -27,7 +30,7 @@ public class MemberUserDetails extends CustomUserDetails {
                 .refreshToken(member.getRefreshToken())
                 .build();
 
-        memberUserDetails.roles = member.getRoles();
+        memberUserDetails.roles = member.getRoles().stream().map(MemberRole::getRole).collect(Collectors.toSet());
 
         return memberUserDetails;
     }

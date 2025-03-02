@@ -2,8 +2,8 @@ package demo.eternalreturn.application.service.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import demo.eternalreturn.domain.model.Member;
-import demo.eternalreturn.domain.repository.MemberRepository;
+import demo.eternalreturn.domain.model.Member.Member;
+import demo.eternalreturn.domain.repository.member.MemberRepository;
 import demo.eternalreturn.presentation.exception.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class CacheService {
 
     private Member loadUserFromDatabase(String id) {
         return memberRepository
-                .findById(Long.valueOf(id))
+                .findByIdWithRoles(Long.valueOf(id))
                 .orElseThrow(
                         () ->
                                 new CustomException(

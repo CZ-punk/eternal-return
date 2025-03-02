@@ -1,7 +1,7 @@
 package demo.eternalreturn.infrastructure.security.user;
 
 import demo.eternalreturn.application.service.cache.CacheService;
-import demo.eternalreturn.domain.model.Member;
+import demo.eternalreturn.domain.model.Member.Member;
 import demo.eternalreturn.infrastructure.security.user.custom.CustomUserDetails;
 import demo.eternalreturn.infrastructure.security.user.custom.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;

@@ -2,4 +2,4 @@ spring:
   application:
     name: eternal-return
   profiles:
-    active: local
+    active: local, s3
