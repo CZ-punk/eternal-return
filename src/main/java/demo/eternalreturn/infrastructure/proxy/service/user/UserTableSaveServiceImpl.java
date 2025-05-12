@@ -1,13 +1,16 @@
 package demo.eternalreturn.infrastructure.proxy.service.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import demo.eternalreturn.domain.model.eternal_return.season.Season;
 import demo.eternalreturn.domain.model.eternal_return.user.TopRank;
 import demo.eternalreturn.domain.model.eternal_return.user.UserRank;
-import demo.eternalreturn.domain.repository.player.jpa.TopRankRepository;
-import demo.eternalreturn.domain.repository.player.jpa.UserRankRepository;
+import demo.eternalreturn.domain.repository.eternalreturn.player.jpa.TopRankRepository;
+import demo.eternalreturn.domain.repository.eternalreturn.player.jpa.UserRankRepository;
+import demo.eternalreturn.domain.repository.eternalreturn.season.SeasonRepository;
 import demo.eternalreturn.infrastructure.proxy.constant.DataNodeConst;
 import demo.eternalreturn.infrastructure.proxy.service.util.BulkService;
 import demo.eternalreturn.infrastructure.proxy.service.util.JsonNodeService;
+import demo.eternalreturn.infrastructure.proxy.service.util.TopRankUserStatsUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.RANK_TOP;
-import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.USER_RANK;
+import static demo.eternalreturn.infrastructure.proxy.constant.MetaTypeConst.SEASON;
+import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.*;
 import static org.springframework.http.HttpMethod.GET;
 
 @Slf4j
@@ -37,6 +40,10 @@ public class UserTableSaveServiceImpl implements UserTableSaveService {
     private final UserRankRepository userRankRepository;
     @Autowired
     private final TopRankRepository topRankRepository;
+    @Autowired
+    private final SeasonRepository seasonRepository;
+    @Autowired
+    private final TopRankUserStatsUtil topRankUserStatsUtil;
 
 
     @Override
@@ -46,14 +53,25 @@ public class UserTableSaveServiceImpl implements UserTableSaveService {
                 .flatMap(jsonNode -> {
                     JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.TOP_RANKS);
 
-                    List<TopRank> all = topRankRepository.findAll();
+                    Iterator<JsonNode> elements = dataNode.elements();
+                    List<Integer> userNumList = new ArrayList<>();
+                    for (JsonNode node : dataNode) {
+                        JsonNode userNum = node.path("userNum");
+                        if (userNum != null) userNumList.add(userNum.asInt());
+                    }
 
+
+
+                    topRankRepository.deleteAll();
                     List<TopRank> insertList = new ArrayList<>();
                     List<TopRank> updateList = new ArrayList<>();
-                    Iterator<JsonNode> elements = dataNode.elements();
 
-                    bulkService.comparingAndBulk(elements, all, insertList, updateList, TopRank.class);
-                    return Mono.just(ResponseEntity.ok("success"));
+
+                    topRankUserStatsUtil.fetchUserStats(userNumList);
+
+                    /// top_rank save!
+                    bulkService.comparingAndBulk(elements, List.of(), insertList, updateList, TopRank.class);
+                    return Mono.just(userNumList);
                 });
     }
 
@@ -75,4 +93,19 @@ public class UserTableSaveServiceImpl implements UserTableSaveService {
                 });
     }
 
+    @Override
+    @Transactional
+    public Mono<?> callSeason() {
+        List<Season> all = seasonRepository.findAll();
+        return jsonNodeService.getMonoJsonNodeByPathVariable(DATA, SEASON, GET)
+                .flatMap(jsonNode -> {
+                    JsonNode dataNode = jsonNodeService.checkNodeByName(jsonNode, DataNodeConst.DATA);
+
+                    List<Season> insertList = new ArrayList<>();
+                    List<Season> updateList = new ArrayList<>();
+                    bulkService.comparingAndBulk(dataNode.elements(), all, insertList, updateList, Season.class);
+
+                    return Mono.just(ResponseEntity.ok("success"));
+                });
+    }
 }

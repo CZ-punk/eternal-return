@@ -11,7 +11,6 @@ public class AuditorAwareConfig {
     @Bean
     public AuditorAware<String> auditorProvider() {
         return new AuditorAwareImpl();
-
     }
 
 

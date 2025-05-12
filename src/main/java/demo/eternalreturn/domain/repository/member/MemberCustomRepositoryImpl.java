@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import demo.eternalreturn.domain.constant.Role;
+import demo.eternalreturn.presentation.dto.request.member.ReqMemberSearchCond;
 import demo.eternalreturn.presentation.dto.response.member.ResMemberSearchDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,17 +33,16 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
 
 
     @Override
-    public Page<ResMemberSearchDto> searchMember(Long id, String loginId, String username, Boolean isAdmin, Boolean isDelete, Pageable pageable) {
-
+    public Page<ResMemberSearchDto> searchMember(ReqMemberSearchCond cond, Pageable pageable) {
         List<ResMemberSearchDto> content = queryFactory
                 .select(member)
                 .from(member)
                 .where(
-                        condEqMemberId(id),
-                        condLikeLoginId(loginId),
-                        condLikeUsername(username),
-                        condIsAdmin(isAdmin),
-                        condIsDelete(isDelete)
+                        condEqMemberId(cond.getId()),
+                        condLikeLoginId(cond.getLoginId()),
+                        condLikeUsername(cond.getUsername()),
+                        condIsAdmin(cond.getIsAdmin()),
+                        condIsDelete(cond.getIsDelete())
                 )
                 .leftJoin(member.roles, memberRole).fetchJoin()
                 .leftJoin(member.boardList, board).fetchJoin()
@@ -56,11 +56,11 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .select(member.count())
                 .from(member)
                 .where(
-                        condEqMemberId(id),
-                        condLikeLoginId(loginId),
-                        condLikeUsername(username),
-                        condIsAdmin(isAdmin),
-                        condIsDelete(isDelete)
+                        condEqMemberId(cond.getId()),
+                        condLikeLoginId(cond.getLoginId()),
+                        condLikeUsername(cond.getUsername()),
+                        condIsAdmin(cond.getIsAdmin()),
+                        condIsDelete(cond.getIsDelete())
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);

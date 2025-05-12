@@ -9,22 +9,19 @@ import demo.eternalreturn.presentation.dto.response.ResponseDto;
 import demo.eternalreturn.presentation.dto.response.member.ResGetMemberDto;
 import demo.eternalreturn.presentation.dto.response.member.ResMemberSearchDto;
 import demo.eternalreturn.presentation.dto.response.member.ResUpdateMemberDto;
-import demo.eternalreturn.presentation.exception.ResultMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static demo.eternalreturn.presentation.exception.ResultMessage.*;
-import static org.springframework.http.HttpStatus.*;
+import static demo.eternalreturn.presentation.exception.ResultMessage.Success;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -55,11 +52,22 @@ public class MemberController {
 
     @PatchMapping("/{memberId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<?> updateUsernameById(@PathVariable Long memberId,
-                                                @RequestBody ReqUpdateMemberDto reqUpdateMemberDto,
-                                                @AuthenticationPrincipal CustomUserDetails userDetails
+    public ResponseEntity<?> updateUsernameById(
+            @PathVariable Long memberId,
+            @RequestBody ReqUpdateMemberDto reqUpdateMemberDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         ResUpdateMemberDto resUpdateMemberDto = memberService.updateUsernameById(memberId, reqUpdateMemberDto, userDetails);
         return ResponseEntity.ok(new ResponseDto<>(OK, Success, resUpdateMemberDto));
+    }
+
+    @DeleteMapping("/{memberId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> deleteMemberById(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long memberId
+    ) {
+        memberService.deleteMemberById(memberId, userDetails);
+        return ResponseEntity.ok(new ResponseDto<>(NO_CONTENT, Success, null));
     }
 }

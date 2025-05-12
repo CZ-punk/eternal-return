@@ -1,5 +1,6 @@
 package demo.eternalreturn.application.service.auth;
 
+import demo.eternalreturn.infrastructure.security.user.custom.CustomUserDetails;
 import demo.eternalreturn.presentation.dto.request.auth.ReqSignInDto;
 import demo.eternalreturn.presentation.dto.request.auth.ReqSignUpDto;
 import demo.eternalreturn.presentation.dto.response.auth.ResRefreshDto;
@@ -16,4 +17,5 @@ public interface AuthService {
     void signOut();
 
     ResRefreshDto recreateAccessToken(HttpServletRequest request);
+
 }

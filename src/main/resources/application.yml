@@ -2,4 +2,8 @@ spring:
   application:
     name: eternal-return
   profiles:
-    active: local, s3
+    active: local, s3, oauth2
+
+
+# eternal-return developer site Pw
+# 기본 비밀번호 + ~~

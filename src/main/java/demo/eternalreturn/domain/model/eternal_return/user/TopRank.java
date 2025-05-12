@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Entity
+@ToString   // 테스트 후 삭제
 @Table(name = "top_rank")
 public class TopRank {
 

@@ -1,9 +1,12 @@
 package demo.eternalreturn.infrastructure.init;
 
 import demo.eternalreturn.domain.constant.Role;
+import demo.eternalreturn.domain.model.Board.Board;
 import demo.eternalreturn.domain.model.Member.Member;
 import demo.eternalreturn.domain.model.Member.MemberRole;
+import demo.eternalreturn.domain.repository.board.BoardRepository;
 import demo.eternalreturn.domain.repository.member.MemberRepository;
+import demo.eternalreturn.presentation.dto.request.board.ReqPostBoardDto;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -21,18 +25,22 @@ public class InitAdminSetup {
 
 
     private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
+
 
     private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     @Transactional
     public void init() {
+
+        Member adminMember;
         if (memberRepository.findByLoginId("admin").isEmpty()) {
             MemberRole role = MemberRole.builder()
                     .role(Role.ADMIN)
                     .build();
 
-            Member adminMember = Member.builder()
+            adminMember = Member.builder()
                     .loginId("admin")
                     .loginPw(passwordEncoder.encode("admin"))
                     .username("admin")

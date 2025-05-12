@@ -2,6 +2,10 @@ package demo.eternalreturn.infrastructure.proxy.service.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import demo.eternalreturn.domain.model.eternal_return.user.CharacterStats;
+import demo.eternalreturn.domain.model.eternal_return.user.UserStats;
+import demo.eternalreturn.domain.repository.eternalreturn.player.jpa.CharacterStatsRepository;
+import demo.eternalreturn.domain.repository.eternalreturn.player.jpa.UserStatsRepository;
 import demo.eternalreturn.presentation.exception.CustomException;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -14,14 +18,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static demo.eternalreturn.infrastructure.proxy.service.util.InstanceUtils.createInstance;
 
@@ -34,6 +37,11 @@ public class BulkServiceImpl implements BulkService {
     private final JdbcTemplate jdbcTemplate;
     @Autowired
     private final ObjectMapper objectMapper;
+    @Autowired
+    private UserStatsRepository userStatsRepository;
+    @Autowired
+    private CharacterStatsRepository characterStatsRepository;
+
 
     // 성능: BulkUpdate > DirtyChecking
     // 단, Json data === Class FieldName
@@ -135,9 +143,14 @@ public class BulkServiceImpl implements BulkService {
     }
 
     private boolean isSupportedType(Class<?> clazz) {
-        return clazz.equals(Integer.class) || clazz.equals(Long.class) || clazz.equals(Double.class) ||
-                clazz.equals(Float.class) || clazz.equals(String.class) || clazz.equals(Boolean.class) ||
-                clazz.isEnum();
+        try {
+            return clazz.equals(Integer.class) || clazz.equals(Long.class) || clazz.equals(Double.class) ||
+                    clazz.equals(Float.class) || clazz.equals(String.class) || clazz.equals(Boolean.class) ||
+                    clazz.isEnum() || clazz.equals(LocalDateTime.class) || clazz.equals(UserStats.class);
+        } catch (NullPointerException e) {
+            log.error("null point error: {}", e.getMessage());
+            return false;
+        }
     }
 
     public <T> void bulkInsert(List<T> objectList) {
@@ -146,7 +159,7 @@ public class BulkServiceImpl implements BulkService {
             return;
         }
 
-        log.info("bulkInsert: start");
+        log.info("bulkInsert: start: {}", objectList.size());
         T dto = objectList.getFirst();
         Class<?> aClass = dto.getClass();
 
@@ -160,9 +173,9 @@ public class BulkServiceImpl implements BulkService {
             field.setAccessible(true);
 
             if (field.isAnnotationPresent(GeneratedValue.class)) continue;
+            if (List.class.isAssignableFrom(field.getType())) continue;
 
             String columnName = getColumnName(field);
-
             sql.append(columnName).append(", ");
             placeholders.append("?, ");
         }
@@ -171,18 +184,22 @@ public class BulkServiceImpl implements BulkService {
         placeholders.setLength(placeholders.length() - 2);
         sql.append(") VALUES (").append(placeholders).append(")");
 
-        log.info("insert sql: {}", sql.toString());
+        log.info("bulkInsert: {}", sql.toString());
         jdbcTemplate.batchUpdate(sql.toString(), objectList, objectList.size(),
                 (ps, object) -> {
                     List<Field> list = Arrays.stream(fields)
                             .filter(field -> !field.isAnnotationPresent(GeneratedValue.class))
                             .toList();
 
-
                     for (int i = 0; i < list.size(); i++) {
                         list.get(i).setAccessible(true);
                         try {
                             Object value = list.get(i).get(object);
+
+                            if (value instanceof UserStats userStats) {
+                                log.info("value is UserStats Type!: {}", value);
+                                value = userStats.getUserNum();
+                            }
 
                             if (!isSupportedType(value.getClass()))
                                 throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "bulk insert: not supported type, value: " + value + ", class: " + value.getClass());
@@ -194,10 +211,13 @@ public class BulkServiceImpl implements BulkService {
                                 case Double d -> ps.setDouble(i + 1, d);
                                 case Long l -> ps.setLong(i + 1, l);
                                 case Float f -> ps.setFloat(i + 1, f);
-                                case null, default -> ps.setObject(i + 1, value);
+                                case LocalDateTime ldt -> ps.setTimestamp(i + 1, Timestamp.valueOf(ldt));
+                                case null, default -> ps.setObject(i + 1, null);
                             }
                         } catch (IllegalAccessException e) {
                             throw new RuntimeException("Failed to access field: " + fields[i].getName(), e);
+                        } catch (Exception e) {
+                            log.error("insert sql failed: {}", sql, e);
                         }
                     }
                 });
@@ -208,7 +228,7 @@ public class BulkServiceImpl implements BulkService {
             log.info("bulkUpdate Empty object!");
             return;
         }
-        log.info("bulkUpdate: start");
+        log.info("bulkUpdate: start: {}", objectList.size());
 
         Class<?> aClass = objectList.getFirst().getClass();
         Field[] fields = aClass.getDeclaredFields();
@@ -219,6 +239,7 @@ public class BulkServiceImpl implements BulkService {
 
         for (Field field : fields) {
             field.setAccessible(true);
+            if (List.class.isAssignableFrom(field.getType())) continue;
             if (field.isAnnotationPresent(Id.class)) {
                 placeholder.append(" where ");
                 placeholder.append(getColumnName(field)).append(" = ?");
@@ -235,8 +256,10 @@ public class BulkServiceImpl implements BulkService {
             int index = 1;
             for (Field field : fields) {
                 field.setAccessible(true);
+
                 try {
                     Object value = field.get(object);
+
                     if (!isSupportedType(value.getClass()))
                         throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "bulk update: not supported type, value: " + value + ", class: " + value.getClass());
 
@@ -250,7 +273,8 @@ public class BulkServiceImpl implements BulkService {
                             case Double d -> ps.setDouble(index++, d);
                             case Long l -> ps.setLong(index++, l);
                             case Float f -> ps.setFloat(index++, f);
-                            default -> ps.setObject(index++, value);
+                            case LocalDateTime ldt -> ps.setTimestamp(index++, Timestamp.valueOf(ldt));
+                            default -> ps.setObject(index++, null);
                         }
                     }
                 } catch (IllegalAccessException e) {
@@ -258,6 +282,8 @@ public class BulkServiceImpl implements BulkService {
                 } catch (SQLException e) {
                     log.error("sql exception: {}", e.getMessage());
                     throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (Exception e) {
+                    log.error("update sql failed: {}", sql, e);
                 }
             }
         });
@@ -269,4 +295,107 @@ public class BulkServiceImpl implements BulkService {
                 field.getName().replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
         return columnName;
     }
+
+
+    @Override
+    @Transactional
+    public <P, C> void relationShipBulk(Iterator<JsonNode> elements, Class<P> parent, Class<C> child) {
+        List<P> parentList = new ArrayList<>();
+        List<C> childList = new ArrayList<>();
+
+        while (elements.hasNext()) {
+            JsonNode element = elements.next();
+            try {
+                P item = objectMapper.readValue(element.toString(), parent);
+                parentList.add(item);
+                createSubObject(item, element.path("characterStats"), child, childList);
+
+            } catch (IOException e) {
+                log.error("JSON 변환 중 오류 발생: {}", e.getMessage());
+                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
+        }
+
+        List<UserStats> allUserStats = userStatsRepository.findAll(
+                parentList.stream().map(this::extractPrimaryKey).toList()
+        );
+
+        List<CharacterStats> allCharacterStats = characterStatsRepository.findAllByUserNum(
+                parentList.stream().map(this::extractPrimaryKey).toList()
+        );
+
+        List<P> insertList = new ArrayList<>();
+        List<P> updateList = new ArrayList<>();
+        List<C> insertChildList = new ArrayList<>();
+        List<C> updateChildList = new ArrayList<>();
+
+        for (P entity : parentList) {
+            Integer pk = extractPrimaryKey(entity);
+            Optional<UserStats> optionalUserStats = allUserStats.stream()
+                    .filter(userStats -> userStats.getUserNum().equals(pk))
+                    .findAny();
+
+            if (optionalUserStats.isPresent()) updateList.add(entity);
+            else insertList.add(entity);
+        }
+
+        for (C entity : childList) {
+            Optional<CharacterStats> optionalCharacterStats = allCharacterStats.stream()
+                    .filter(characterStats -> characterStats.equals(entity))
+                    .findFirst();
+
+            if (optionalCharacterStats.isPresent()) updateChildList.add((C) optionalCharacterStats.get());
+            else insertChildList.add(entity);
+        }
+
+        log.info("insertChild.size(): {}", insertChildList.size());
+        log.info("updateChild.size(): {}", updateChildList.size());
+
+        bulkInsert(insertList);
+        bulkUpdate(updateList);
+        bulkInsert(insertChildList);
+        bulkUpdate(updateChildList);
+
+
+    }
+
+    private <P, C> void createSubObject(P item, JsonNode element, Class<C> child, List<C> childList) {
+        try {
+            Integer itemId = extractPrimaryKey(item);
+
+            C childObject = null;
+            Iterator<JsonNode> elements = element.elements();
+
+            while (elements.hasNext()) {
+                JsonNode node = elements.next();
+                childObject = objectMapper.readValue(node.toString(), child);
+                Field userNumField = childObject.getClass().getDeclaredField("userNum");
+                userNumField.setAccessible(true);
+                userNumField.set(childObject, itemId);
+
+                childList.add(childObject);
+            }
+        } catch (Exception e) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "setRelationShips Error");
+        }
+    }
+
+    private <T> Integer extractPrimaryKey(T item) {
+        try {
+            Field[] declaredFields = item.getClass().getDeclaredFields();
+            Integer itemId = null;
+            for (Field field : declaredFields)
+                if (field.isAnnotationPresent(Id.class)) {
+                    field.setAccessible(true);
+                    itemId = (Integer) field.get(item);
+                    break;
+                }
+            return itemId;
+
+        } catch (IllegalAccessException e) {
+            log.error("not found item pk");
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
 }

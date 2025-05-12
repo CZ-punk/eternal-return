@@ -5,6 +5,7 @@ import demo.eternalreturn.domain.model.Member.MemberRole;
 import demo.eternalreturn.infrastructure.security.user.custom.CustomUserDetails;
 import lombok.*;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -45,4 +46,8 @@ public class MemberUserDetails extends CustomUserDetails {
         return loginPw;
     }
 
+    @Override
+    public String getName() {
+        return username;
+    }
 }

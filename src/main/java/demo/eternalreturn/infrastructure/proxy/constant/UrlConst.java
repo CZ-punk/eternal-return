@@ -8,5 +8,5 @@ public class UrlConst {
     public static String RANK_TOP = "/v1/rank/top";
     public static String USER_RANK = "/v1/rank";
     public static String USER_STATS = "/v1/user/stats";
-
+    public static String USER_GAMES = "/v1/user/games/";
 }

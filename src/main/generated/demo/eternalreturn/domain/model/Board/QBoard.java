@@ -24,6 +24,12 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final demo.eternalreturn.domain.model.QBaseEntity _super = new demo.eternalreturn.domain.model.QBaseEntity(this);
 
+    public final StringPath author = createString("author");
+
+    public final NumberPath<Integer> commentCount = createNumber("commentCount", Integer.class);
+
+    public final ListPath<demo.eternalreturn.domain.model.comment.Comment, demo.eternalreturn.domain.model.comment.QComment> commentList = this.<demo.eternalreturn.domain.model.comment.Comment, demo.eternalreturn.domain.model.comment.QComment>createList("commentList", demo.eternalreturn.domain.model.comment.Comment.class, demo.eternalreturn.domain.model.comment.QComment.class, PathInits.DIRECT2);
+
     public final StringPath contents = createString("contents");
 
     //inherited
@@ -45,6 +51,8 @@ public class QBoard extends EntityPathBase<Board> {
     //inherited
     public final BooleanPath isDelete = _super.isDelete;
 
+    public final NumberPath<Integer> likeCount = createNumber("likeCount", Integer.class);
+
     public final demo.eternalreturn.domain.model.Member.QMember member;
 
     public final StringPath title = createString("title");
@@ -54,6 +62,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     //inherited
     public final StringPath updatedBy = _super.updatedBy;
+
+    public final NumberPath<Integer> viewCount = createNumber("viewCount", Integer.class);
 
     public QBoard(String variable) {
         this(Board.class, forVariable(variable), INITS);

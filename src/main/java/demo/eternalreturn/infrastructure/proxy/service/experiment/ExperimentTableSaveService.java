@@ -3,6 +3,7 @@ package demo.eternalreturn.infrastructure.proxy.service.experiment;
 import demo.eternalreturn.domain.model.eternal_return.user.UserStats;
 import demo.eternalreturn.presentation.dto.response.ResponseDto;
 import demo.eternalreturn.presentation.dto.request.eternal_return.ReqUserNicknameDto;
+import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Mono;
 
 public interface ExperimentTableSaveService {
@@ -19,8 +20,8 @@ public interface ExperimentTableSaveService {
 
     Mono<?> callExperimentLevelUpStat();
 
-    ResponseDto<?> registerUserStats(ReqUserNicknameDto userNicknameDto);
+    UserStats registerUserStats(ReqUserNicknameDto reqUserNicknameDto);
 
-    ResponseDto<?> updateUserStats(UserStats userStats);
+    UserStats updateUserStats(UserStats userStats);
 
 }

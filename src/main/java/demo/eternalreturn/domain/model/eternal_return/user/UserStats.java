@@ -1,9 +1,13 @@
 package demo.eternalreturn.domain.model.eternal_return.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,10 +19,10 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "user_stats")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserStats {
 
-    @Id
-    @Column(unique = true, nullable = false)
+    @Id @Column(unique = true, nullable = false, name = "user_num")
     private Integer userNum;
     private Integer seasonId;
 
@@ -46,16 +50,9 @@ public class UserStats {
     private Double top5;
     private Double top7;
 
+    @LastModifiedDate
     @Builder.Default
-    @JsonIgnore
-    @OneToMany(mappedBy = "userStats", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CharacterStats> characterStats = new ArrayList<>();
-
-    public CharacterStats addCharacterStats(CharacterStats stats) {
-        characterStats.add(stats);
-        stats.setUserStats(this);
-        return stats;
-    }
+    private LocalDateTime updateAt = LocalDateTime.now();
 
     public UserStats update(UserStats result) {
         seasonId = result.getSeasonId();
@@ -81,9 +78,8 @@ public class UserStats {
         top5 = result.getTop5();
         top7 = result.getTop7();
 
-        characterStats.clear();
-        characterStats = result.getCharacterStats();
-
+        updateAt = LocalDateTime.now();
         return this;
     }
+
 }

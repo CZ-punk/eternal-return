@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,6 +15,6 @@ public class ReqPostBoardDto {
 
     private String title;
     private String contents;
-    private List<MultipartFile> imageFiles;
+    private List<MultipartFile> imageFiles = new ArrayList<>();
 
 }

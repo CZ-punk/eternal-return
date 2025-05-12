@@ -24,6 +24,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final ListPath<demo.eternalreturn.domain.model.Board.Board, demo.eternalreturn.domain.model.Board.QBoard> boardList = this.<demo.eternalreturn.domain.model.Board.Board, demo.eternalreturn.domain.model.Board.QBoard>createList("boardList", demo.eternalreturn.domain.model.Board.Board.class, demo.eternalreturn.domain.model.Board.QBoard.class, PathInits.DIRECT2);
 
+    public final ListPath<demo.eternalreturn.domain.model.comment.Comment, demo.eternalreturn.domain.model.comment.QComment> commentList = this.<demo.eternalreturn.domain.model.comment.Comment, demo.eternalreturn.domain.model.comment.QComment>createList("commentList", demo.eternalreturn.domain.model.comment.Comment.class, demo.eternalreturn.domain.model.comment.QComment.class, PathInits.DIRECT2);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
@@ -44,6 +46,14 @@ public class QMember extends EntityPathBase<Member> {
     public final StringPath loginId = createString("loginId");
 
     public final StringPath loginPw = createString("loginPw");
+
+    public final StringPath profileImageUrl = createString("profileImageUrl");
+
+    public final EnumPath<demo.eternalreturn.domain.constant.SocialProvider> provider = createEnum("provider", demo.eternalreturn.domain.constant.SocialProvider.class);
+
+    public final StringPath providerEmail = createString("providerEmail");
+
+    public final StringPath providerId = createString("providerId");
 
     public final StringPath refreshToken = createString("refreshToken");
 

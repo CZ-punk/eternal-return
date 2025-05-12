@@ -25,10 +25,9 @@ public class S3ServiceImpl implements S3Service  {
     private final AmazonS3 s3;
 
     @Override
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file, Long id) {
         try {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-
+            String fileName = String.format("board/%s/%s", id, file.getOriginalFilename());
             log.info("Uploading file " + fileName);
 
             ObjectMetadata metadata = new ObjectMetadata();

@@ -5,14 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByLoginId(String loginId);
-    Optional<Member> findByLoginIdOrUsername(String loginId, String username);
-    Optional<Member> findByIdAndDeleteFalse(Long id);
+    List<Member> findByLoginIdOrUsername(String loginId, String username);
+    Optional<Member> findByIdAndIsDeleteFalse(Long id);
 
     @Query("select m from Member m join fetch m.roles where m.id = :id")
     Optional<Member> findByIdWithRoles(Long id);
@@ -24,6 +25,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByIdAndDeleteFalseJoinBoardList(Long id);
 
 
-
-
+    Optional<Member> findByUsername(String username);
 }

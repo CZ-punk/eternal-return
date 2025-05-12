@@ -3,8 +3,9 @@ package demo.eternalreturn.infrastructure.proxy.service.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import demo.eternalreturn.domain.model.eternal_return.user.UserStats;
 import demo.eternalreturn.infrastructure.proxy.dto.request.ReqApiDto;
-import demo.eternalreturn.infrastructure.proxy.service.EternalReturnService;
+import demo.eternalreturn.infrastructure.proxy.service.ProxyService;
 import demo.eternalreturn.presentation.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +22,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import static demo.eternalreturn.infrastructure.proxy.service.util.InstanceUtils.createInstance;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -30,7 +30,7 @@ import static demo.eternalreturn.infrastructure.proxy.service.util.InstanceUtils
 public class JsonNodeServiceImpl implements JsonNodeService {
 
     @Autowired
-    private final EternalReturnService eternalReturnService;
+    private final ProxyService eternalReturnService;
     @Value("${eternal-return.url}")
     private String baseUrl;
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -55,6 +55,11 @@ public class JsonNodeServiceImpl implements JsonNodeService {
         endpoint += "/" + pathVariable;
 
         return eternalReturnService.callApi(endpoint, request, JsonNode.class);
+    }
+
+    @Override
+    public Mono<List<JsonNode>> getMonoJsonNodeByPathVariableRateLimit(Map<ReqApiDto, String> requestMap, HttpMethod method) {
+        return eternalReturnService.callApisWithRateLimit(requestMap, JsonNode.class);
     }
 
     @Override
@@ -146,8 +151,15 @@ public class JsonNodeServiceImpl implements JsonNodeService {
                 }
             }
         } catch (Exception e) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "setRelationShips Err");
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "setRelationShips Error");
         }
     }
 
+    @Override
+    public JsonNode createFinalJson(String dataNode, List<JsonNode> combinedNodes) {
+        return objectMapper.createObjectNode()
+                .put("code", 200)
+                .put("message", "Success")
+                .set(dataNode, objectMapper.valueToTree(combinedNodes));
+    }
 }

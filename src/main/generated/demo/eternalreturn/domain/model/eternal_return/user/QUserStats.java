@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -27,8 +26,6 @@ public class QUserStats extends EntityPathBase<UserStats> {
     public final NumberPath<Double> averageKills = createNumber("averageKills", Double.class);
 
     public final NumberPath<Double> averageRank = createNumber("averageRank", Double.class);
-
-    public final ListPath<CharacterStats, QCharacterStats> characterStats = this.<CharacterStats, QCharacterStats>createList("characterStats", CharacterStats.class, QCharacterStats.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> escapeCount = createNumber("escapeCount", Integer.class);
 
@@ -65,6 +62,8 @@ public class QUserStats extends EntityPathBase<UserStats> {
     public final NumberPath<Integer> totalTeamKills = createNumber("totalTeamKills", Integer.class);
 
     public final NumberPath<Integer> totalWins = createNumber("totalWins", Integer.class);
+
+    public final DateTimePath<java.time.LocalDateTime> updateAt = createDateTime("updateAt", java.time.LocalDateTime.class);
 
     public final NumberPath<Integer> userNum = createNumber("userNum", Integer.class);
 

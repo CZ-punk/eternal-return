@@ -11,7 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResSignInDto {
 
-    String accessToken;
-    String refreshToken;
+    private Long memberId;
+    private String username;
+    private String accessToken;
+    private String refreshToken;
+    private String profileImageUrl;
 
 }

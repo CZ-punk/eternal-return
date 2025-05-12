@@ -13,6 +13,7 @@ public interface BulkService {
 
     <T> T createInstanceByObject(JsonNode dataNode, Class<T> clazz);
 
+    <P, C> void relationShipBulk(Iterator<JsonNode> elements, Class<P> parent, Class<C> child);
 
 
 }

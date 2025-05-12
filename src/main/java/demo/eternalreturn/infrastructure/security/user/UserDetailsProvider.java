@@ -28,9 +28,6 @@ public class UserDetailsProvider {
 
         if (roles == null) return null;
 
-        log.info("roles: {}", roles);
-
-
         boolean hasValidRole = false;
         String[] split = roles.split(",");
 
@@ -45,8 +42,6 @@ public class UserDetailsProvider {
         if (!hasValidRole) return null;
         CustomUserDetails userDetails = (CustomUserDetails) memberUserDetailsService.loadUserByUsername(id);
 
-        log.info("userDetails: {}", userDetails);
-        log.info("userDetails: {}", userDetails.getAuthorities());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 

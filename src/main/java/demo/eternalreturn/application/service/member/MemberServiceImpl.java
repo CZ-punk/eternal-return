@@ -30,14 +30,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional(readOnly = true)
     public Page<ResMemberSearchDto> searchMember(ReqMemberSearchCond reqMemberSearchCond, Pageable pageable) {
-        return memberCustomRepository.searchMember(
-                reqMemberSearchCond.getId(),
-                reqMemberSearchCond.getLoginId(),
-                reqMemberSearchCond.getUsername(),
-                reqMemberSearchCond.getIsAdmin(),
-                reqMemberSearchCond.getIsDelete(),
-                pageable
-        );
+        return memberCustomRepository.searchMember(reqMemberSearchCond, pageable);
 
     }
 
@@ -52,15 +45,18 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public ResUpdateMemberDto updateUsernameById(Long memberId, ReqUpdateMemberDto reqUpdateMemberDto, CustomUserDetails userDetails){
+    public ResUpdateMemberDto updateUsernameById(Long memberId, ReqUpdateMemberDto reqUpdateMemberDto, CustomUserDetails userDetails) {
         if (!userDetails.getMemberId().equals(memberId))
             throw new CustomException(HttpStatus.FORBIDDEN, "not allowed to update member with id: " + memberId);
 
-        Member member = memberRepository.findByIdAndDeleteFalse(memberId)
+        Member member = memberRepository.findByIdAndIsDeleteFalse(memberId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "not found member by id: " + memberId));
 
         if (member.getUsername().equals(reqUpdateMemberDto.getUsername()))
             throw new CustomException(HttpStatus.ALREADY_REPORTED, "username already reported");
+
+        Member duplicatedMember = memberRepository.findByUsername(reqUpdateMemberDto.getUsername()).orElse(null);
+        if (duplicatedMember != null) throw new CustomException(HttpStatus.CONFLICT, "duplicated member");
 
         member.updateUsername(reqUpdateMemberDto.getUsername());
         memberRepository.save(member);
@@ -69,5 +65,16 @@ public class MemberServiceImpl implements MemberService {
                 .id(member.getId())
                 .username(reqUpdateMemberDto.getUsername())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void deleteMemberById(Long memberId, CustomUserDetails userDetails) {
+        if (!userDetails.getMemberId().equals(memberId))
+            throw new CustomException(HttpStatus.FORBIDDEN, "not allowed to delete member with id: " + memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "not found member by id: " + memberId));
+
+        member.softDelete(userDetails.getName());
+        memberRepository.save(member);
     }
 }

@@ -15,6 +15,6 @@ public class ResPostBoardDto {
 
     private Long id;
     private String title;
-    private String content;
+    private String contents;
     private List<String> imageUrlList;
 }

@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,13 +43,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public ResSignUpDto signUp(ReqSignUpDto reqSignUpDto) {
-        Member duplicatedUser = memberRepository.findByLoginIdOrUsername(
+        boolean isEmpty = memberRepository.findByLoginIdOrUsername(
                         reqSignUpDto.getLoginId(),
                         reqSignUpDto.getUsername())
-                .orElse(null);
+                .isEmpty();
 
-        if (duplicatedUser != null)
-            throw new CustomException(HttpStatus.CONFLICT, "duplicated loginId or username");
+        if (!isEmpty) throw new CustomException(HttpStatus.CONFLICT, "duplicated loginId or username");
 
         MemberRole memberRole = MemberRole.builder().role(Role.USER).build();
         Member createdUser = Member.builder()
@@ -73,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public ResSignInDto signIn(ReqSignInDto reqSignInDto) {
         Member member = memberRepository.findByLoginIdAndIsDeleteFalseWithRoles(reqSignInDto.getLoginId())
-                .orElseThrow(() -> new CustomException(HttpStatus.UNAUTHORIZED, "not found member"));
+                .orElseThrow(() -> new CustomException(HttpStatus.UNAUTHORIZED, "not found member by loginId"));
 
         if (!passwordEncoder.matches(reqSignInDto.getLoginPw(), member.getLoginPw()))
             throw new CustomException(HttpStatus.UNAUTHORIZED, "no matches password");
@@ -86,8 +83,11 @@ public class AuthServiceImpl implements AuthService {
         memberRepository.save(member);
 
         return ResSignInDto.builder()
+                .memberId(member.getId())
+                .username(member.getUsername())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .profileImageUrl(member.getProfileImageUrl())
                 .build();
     }
 
@@ -101,7 +101,6 @@ public class AuthServiceImpl implements AuthService {
 
                     member.signOut();
                     memberRepository.save(member);
-
                 },
                 () -> {
                     throw new CustomException(HttpStatus.UNAUTHORIZED, "no authentication info");
@@ -113,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public ResRefreshDto recreateAccessToken(HttpServletRequest request) {
         return this.getUserDetailsByToken().map(user -> {
-            String refreshToken = jwtTokenProvider.resolveToken(request);
+            String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
             if (StringUtils.hasText(refreshToken) && refreshToken.startsWith(BEARER_PREFIX))
                 refreshToken = refreshToken.substring(BEARER_PREFIX.length()).trim();
 
@@ -123,6 +122,9 @@ public class AuthServiceImpl implements AuthService {
 
             Member member = memberRepository.findById(user.getMemberId())
                     .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "no exist member"));
+
+            if (!member.getLoginPw().equals(user.getLoginPw()))
+                throw new CustomException(HttpStatus.UNAUTHORIZED, "no equals password");
 
             if (member.isDelete()) throw new CustomException(HttpStatus.FORBIDDEN, "with draw member");
 
@@ -145,7 +147,6 @@ public class AuthServiceImpl implements AuthService {
                     .build();
 
         }).orElseThrow(() -> new CustomException(HttpStatus.FORBIDDEN, "no authority"));
-
     }
 
     private Optional<MemberUserDetails> getUserDetailsByToken() {

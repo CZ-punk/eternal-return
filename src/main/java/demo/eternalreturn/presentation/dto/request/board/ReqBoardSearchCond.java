@@ -12,5 +12,5 @@ public class ReqBoardSearchCond {
     private Long id;
     private String title;
     private String contents;
-    private String username;
+    private String author;
 }

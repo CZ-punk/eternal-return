@@ -16,4 +16,8 @@ public class ResGetBoardDto {
     private String title;
     private String contents;
     private List<String> imageUrlList;
+
+    private Integer viewCount;
+    private Integer likeCount;
+    private Integer commentCount;
 }

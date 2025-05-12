@@ -1,7 +1,6 @@
 package demo.eternalreturn.infrastructure.proxy.service.l10n;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import demo.eternalreturn.infrastructure.proxy.constant.DataNodeConst;
 import demo.eternalreturn.infrastructure.proxy.constant.UrlConst;
 import demo.eternalreturn.infrastructure.proxy.service.util.JsonNodeService;
 import demo.eternalreturn.presentation.exception.CustomException;
@@ -19,6 +18,9 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static demo.eternalreturn.infrastructure.proxy.constant.DataNodeConst.DATA;
 import static demo.eternalreturn.infrastructure.proxy.constant.DataNodeConst.L10N_PATH;
@@ -39,13 +41,19 @@ public class L10NServiceImpl implements L10NService {
         JsonNode urlNode = jsonNodeService.checkNodeByName(dataNode, L10N_PATH);
         String urlString = urlNode.asText();
 
-        saveUrlContentToFile(urlString, "resources/files/l10n-content.txt");
+        saveUrlContentToFile(urlString);
         return Mono.just("File saved successfully.");
     }
 
-    private void saveUrlContentToFile(String urlString, String filePath) {
-
+    private void saveUrlContentToFile(String urlString) {
         try {
+            String projectDir = System.getProperty("user.dir");
+            Path fullPath = Paths.get(projectDir, "src", "main", "resources", "files", "l10n-content.txt");
+
+            Path path = fullPath.getParent();
+            if (path != null && !Files.exists(path)) {
+                Files.createDirectories(path);
+            }
 
             log.info("urlString: {}", urlString);
             URL url = new URL(urlString);
@@ -54,7 +62,7 @@ public class L10NServiceImpl implements L10NService {
 
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                     FileWriter writer = new FileWriter(filePath)) {
+                     FileWriter writer = new FileWriter(fullPath.toFile())) {
                     String inputLine;
                     while ((inputLine = in.readLine()) != null) {
                         writer.write(inputLine);

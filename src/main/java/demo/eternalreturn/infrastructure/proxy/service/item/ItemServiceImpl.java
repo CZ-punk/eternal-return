@@ -1,6 +1,6 @@
 package demo.eternalreturn.infrastructure.proxy.service.item;
 
-import demo.eternalreturn.domain.repository.item.custom.ItemCustomRepository;
+import demo.eternalreturn.domain.repository.eternalreturn.item.custom.ItemCustomRepository;
 import demo.eternalreturn.presentation.dto.request.eternal_return.ItemArmorCond;
 import demo.eternalreturn.presentation.dto.request.eternal_return.ItemConsumableCond;
 import demo.eternalreturn.presentation.dto.request.eternal_return.ItemWeaponCond;

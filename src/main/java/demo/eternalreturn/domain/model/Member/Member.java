@@ -1,7 +1,9 @@
 package demo.eternalreturn.domain.model.Member;
 
+import demo.eternalreturn.domain.constant.SocialProvider;
 import demo.eternalreturn.domain.model.BaseEntity;
 import demo.eternalreturn.domain.model.Board.Board;
+import demo.eternalreturn.domain.model.comment.Comment;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +28,11 @@ public class Member extends BaseEntity {
     private String loginPw;
     private String username;
 
-    private String refreshToken;
+    private String profileImageUrl;
+    @Enumerated(EnumType.STRING)
+    private SocialProvider provider;    // Social Provider ( ex. google, kakao )
+    private String providerId;          // Social Provider pk
+    private String providerEmail;       // Social Email
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -36,6 +42,11 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<Board> boardList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Comment> commentList = new ArrayList<>();
+
+    private String refreshToken;
 
     public void signOut() {
         this.refreshToken = null;
@@ -44,6 +55,15 @@ public class Member extends BaseEntity {
     public void connectionRole(MemberRole role) {
         this.roles.add(role);
         role.setMember(this);
+    }
+
+    public void connectionBoard(Board board) {
+        this.boardList.add(board);
+        board.setMember(this);
+    }
+
+    public void connectionComment(Comment comment) {
+        this.commentList.add(comment);
     }
 
     public void updateUsername(String username) {

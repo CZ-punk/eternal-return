@@ -24,10 +24,11 @@ public class JwtTokenProvider {
     @Value("${jwt.secret-key}")
     private String key;
 
-    private final Long ACCESS_TOKEN_VALID_TIME = 5 * 60 * 1000L;    // ms
-    private final Long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 1000L;  // ms
+    private final Long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 1000L;    // ms // 1H
+    private final Long REFRESH_TOKEN_VALID_TIME = 24 * 60 * 60 * 1000L;  // ms // 24H
     private SecretKey secretKey;
     public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String REFRESH_TOKEN_HEADER = "Refresh-Token";
     public static final String BEARER_PREFIX = "Bearer ";
 
     @PostConstruct
@@ -89,5 +90,9 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader(AUTHORIZATION_HEADER);
+    }
+
+    public String resolveRefreshToken(HttpServletRequest request) {
+        return request.getHeader(REFRESH_TOKEN_HEADER);
     }
 }

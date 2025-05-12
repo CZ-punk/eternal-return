@@ -19,4 +19,6 @@ public interface MemberService {
     ResGetMemberDto getMemberById(Long memberId);
 
     ResUpdateMemberDto updateUsernameById(Long memberId, ReqUpdateMemberDto reqUpdateMemberDto, CustomUserDetails userDetails);
+
+    void deleteMemberById(Long memberId, CustomUserDetails userDetails);
 }

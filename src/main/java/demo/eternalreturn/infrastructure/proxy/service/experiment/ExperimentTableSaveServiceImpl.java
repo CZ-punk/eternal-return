@@ -3,18 +3,16 @@ package demo.eternalreturn.infrastructure.proxy.service.experiment;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import demo.eternalreturn.domain.model.eternal_return.experiment.*;
-import demo.eternalreturn.domain.model.eternal_return.user.UserStats;
 import demo.eternalreturn.domain.model.eternal_return.item.WeaponTypeInfo;
-import demo.eternalreturn.domain.repository.player.jpa.CharacterStatsRepository;
-import demo.eternalreturn.domain.repository.player.jpa.UserStatsRepository;
-import demo.eternalreturn.domain.repository.item.jpa.WeaponTypeInfoRepository;
-import demo.eternalreturn.domain.repository.experiment.jpa.*;
+import demo.eternalreturn.domain.model.eternal_return.user.UserStats;
+import demo.eternalreturn.domain.repository.eternalreturn.experiment.jpa.*;
+import demo.eternalreturn.domain.repository.eternalreturn.item.jpa.WeaponTypeInfoRepository;
+
+import demo.eternalreturn.domain.repository.eternalreturn.player.jpa.UserStatsRepository;
 import demo.eternalreturn.infrastructure.proxy.dto.response.ResUserNicknameDto;
-import demo.eternalreturn.presentation.dto.response.ResponseDto;
 import demo.eternalreturn.infrastructure.proxy.service.util.BulkService;
 import demo.eternalreturn.infrastructure.proxy.service.util.JsonNodeService;
 import demo.eternalreturn.presentation.dto.request.eternal_return.ReqUserNicknameDto;
-import demo.eternalreturn.presentation.dto.response.eternal_return.user.ResUserStatsDto;
 import demo.eternalreturn.presentation.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +29,8 @@ import java.util.List;
 
 import static demo.eternalreturn.infrastructure.proxy.constant.MetaTypeConst.*;
 import static demo.eternalreturn.infrastructure.proxy.constant.UrlConst.*;
-import static demo.eternalreturn.presentation.exception.ResultMessage.Success;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 @Service
@@ -42,6 +40,7 @@ public class ExperimentTableSaveServiceImpl implements ExperimentTableSaveServic
     private final String DATA_NODE = "data";
     private final String USER_STATS_NODE = "userStats";
     private final String USER_NODE = "user";
+    private final Integer CURRENT_SEASON_ID = 31;
     @Autowired
     private final BulkService bulkService;
     @Autowired
@@ -60,8 +59,8 @@ public class ExperimentTableSaveServiceImpl implements ExperimentTableSaveServic
     private final ExperimentLevelUpStatRepository experimentLevelUpStatRepository;
     @Autowired
     private final UserStatsRepository userStatsRepository;
-    @Autowired
-    private final CharacterStatsRepository characterStatsRepository;
+//    @Autowired
+//    private final CharacterStatsRepository characterStatsRepository;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -171,43 +170,36 @@ public class ExperimentTableSaveServiceImpl implements ExperimentTableSaveServic
 
     @Override
     @Transactional
-    public ResponseDto<?> registerUserStats(ReqUserNicknameDto reqUserNicknameDto) {
-        ResponseEntity<ResUserNicknameDto> responseDto = jsonNodeService.getMonoJsonNodeByQueryParams(USER_NICKNAME, reqUserNicknameDto, GET)
+    public UserStats registerUserStats(ReqUserNicknameDto reqUserNicknameDto) {
+        return jsonNodeService.getMonoJsonNodeByQueryParams(USER_NICKNAME, reqUserNicknameDto, GET)
                 .flatMap(jsonNode -> {
                     JsonNode userNode = jsonNode.path(USER_NODE);
                     ResUserNicknameDto resUserNicknameDto = jsonNodeService.extractDto(userNode, ResUserNicknameDto.class);
 
-                    return Mono.just(ResponseEntity.ok(resUserNicknameDto));
+                    return Mono.just(resUserNicknameDto);
                 })
                 .doOnError(e -> log.error("Error During check userNum: ", e))
-                .block();
+                .flatMap(dto -> {
+                    if (dto == null) return Mono.error(new CustomException(HttpStatus.NO_CONTENT, "No content found"));
 
-        if (responseDto == null) return new ResponseDto<>(HttpStatus.NO_CONTENT, Success, null);
-        Integer userNum = responseDto.getBody().getUserNum();
-        Integer CURRENT_SEASON_ID = 29;
-        String pathVariable = userNum + "/" + CURRENT_SEASON_ID;
-
-        return jsonNodeService.getMonoJsonNodeByPathVariable(USER_STATS, pathVariable, GET)
-                .flatMap(jsonNode -> {
-                    JsonNode userStatsNode = jsonNode.path(USER_STATS_NODE);
-                    Iterator<JsonNode> elements = userStatsNode.elements();
-                    UserStats result = jsonNodeService.jsonMapping(elements, UserStats.class);
-
-                    if (result == null)
-                        throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "not found data: " + reqUserNicknameDto.getQuery());
-
-                    UserStats saveEntity = userStatsRepository.save(result);
-                    return Mono.just(new ResponseDto<>(HttpStatus.OK, Success, new ResUserStatsDto(saveEntity)));
-                })
-                .doOnError(e -> log.error("Error during create dto: ", e))
-                .block();
+                    Integer userNum = dto.getUserNum();
+                    String pathVariable = userNum + "/" + CURRENT_SEASON_ID;
+                    return jsonNodeService.getMonoJsonNodeByPathVariable(USER_STATS, pathVariable, GET)
+                            .flatMap(jsonNode -> {
+                                JsonNode userStatsNode = jsonNode.path(USER_STATS_NODE);
+                                Iterator<JsonNode> elements = userStatsNode.elements();
+                                UserStats result = jsonNodeService.jsonMapping(elements, UserStats.class);
+                                if (result == null)
+                                    return Mono.error(new CustomException(INTERNAL_SERVER_ERROR, "No result found"));
+                                return Mono.just(userStatsRepository.save(result));
+                            });
+                }).block();
     }
 
     @Override
     @Transactional
-    public ResponseDto<?> updateUserStats(UserStats userStats) {
+    public UserStats updateUserStats(UserStats userStats) {
         Integer userNum = userStats.getUserNum();
-        Integer CURRENT_SEASON_ID = 29;
         String pathVariable = userNum + "/" + CURRENT_SEASON_ID;
 
         return jsonNodeService.getMonoJsonNodeByPathVariable(USER_STATS, pathVariable, GET)
@@ -217,14 +209,12 @@ public class ExperimentTableSaveServiceImpl implements ExperimentTableSaveServic
                     UserStats result = jsonNodeService.jsonMapping(elements, UserStats.class);
 
                     if (result == null)
-                        throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "not found data: " + userStats.getNickname());
+                        return Mono.error(new CustomException(INTERNAL_SERVER_ERROR, "not found data: " + userStats.getNickname()));
 
-                    characterStatsRepository.deleteAll(userStats.getCharacterStats());
-                    UserStats updateEntity = userStats.update(result);
-                    return Mono.just(new ResponseDto<>(HttpStatus.OK, Success, new ResUserStatsDto(updateEntity)));
-                })
-                .doOnError(e -> log.error("Error during create dto: ", e))
-                .block();
+                    userStatsRepository.save(userStats.update(result));
+                    return Mono.just(userStats);
+                }).block();
     }
+
 }
 
