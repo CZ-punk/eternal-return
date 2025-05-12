@@ -171,7 +171,7 @@ public class EternalReturnServiceImpl implements EternalReturnService {
 
                     if (flag) return Mono.just(next);
 
-                    log.info(combinedGamesNodes.x() + " games found");
+                    log.info(combinedGamesNodes.size() + " games found");
                     if (next != null && combinedGamesNodes.size() < 20) {
                         request.setQueryParams(Map.of(NEXT_NODE, next));
                         return fetchGames(endpoint, request, combinedGamesNodes, seasonId);
