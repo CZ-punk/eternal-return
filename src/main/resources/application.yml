@@ -2,7 +2,7 @@ spring:
   application:
     name: eternal-return
   profiles:
-    active: local, s3, oauth2
+    active: dev, s3, oauth2
 
 
 # eternal-return developer site Pw
